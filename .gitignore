@@ -1,0 +1,25 @@
+# Secrets
+.env
+
+# Dependencies & build
+node_modules/
+bin/
+obj/
+target/
+dist/
+
+# Python
+__pycache__/
+.venv/
+venv/
+
+# Data & models
+data/raw/
+models/*.pkl
+models/*.pt
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
