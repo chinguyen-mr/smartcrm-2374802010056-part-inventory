@@ -1,5 +1,6 @@
 # Secrets
 .env
+.ua/
 
 # Dependencies & build
 node_modules/
@@ -15,6 +16,8 @@ venv/
 
 # Data & models
 data/raw/
+*.csv
+!data/sample/*.csv
 models/*.pkl
 models/*.pt
 
