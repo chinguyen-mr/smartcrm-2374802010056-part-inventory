@@ -1,6 +1,6 @@
-# API contract đề xuất cho luồng L5
+# API contract – Smart CRM Luồng L5
 
-Tài liệu này mô tả hợp đồng API ở mức thiết kế BT1 để nối giao diện kho với dịch vụ nghiệp vụ. Đối chiếu chỉ đọc với `src/backend/server.js` cho thấy backend hiện chỉ có endpoint smoke test `/api/hello` và `/api/db-test`; các endpoint dưới đây chưa được triển khai. Cơ chế xác thực và API của hệ thống phiếu bảo hành cần được chốt với các hệ thống sở hữu trước khi hiện thực.
+Tài liệu này mô tả hợp đồng API cho luồng L5. Backend hiện đã có endpoint `/api/hello` và `/api/db-test`; các endpoint nghiệp vụ dưới đây được hiện thực trong BT2. Cơ chế xác thực và API của hệ thống phiếu bảo hành sẽ được chốt khi tích hợp.
 
 ## Quy ước
 
@@ -66,7 +66,14 @@ Khi chưa có dòng tồn, thiết kế yêu cầu số lượng hiển thị b�
 }
 ```
 
-Khi thành công, response cần cho biết mã giao dịch, loại `XUAT`, phiếu, trung tâm, linh kiện, số lượng, số lượng tồn sau giao dịch và thời điểm ghi nhận. Kiểm tra quyền, phiếu, tồn và ghi giao dịch/cập nhật tồn phải được xử lý ở phía máy chủ; nếu thất bại, không được để lại thay đổi một phần.
+Khi xuất kho, service phải:
+1. Xác minh `ticket_code` với hệ thống phiếu; kiểm tra cùng `center_id` và trạng thái hợp lệ.
+2. Tra cứu hoặc tạo bản ghi `ticket_ref`.
+3. Tạo bản ghi `ticket_part` gắn `ticket_id` và `part_id`.
+4. Ghi giao dịch `part_transaction` loại `XUAT`.
+5. Cập nhật `ticket_part.transaction_id`.
+6. Giảm `part_stock.quantity`.
+7. Tất cả các bước 2–6 phải trong một database transaction; nếu bất kỳ bước nào lỗi thì rollback toàn bộ.
 
 ### Nhập kho
 
@@ -107,7 +114,5 @@ Khi thành công, response cần cho biết mã giao dịch, loại `NHAP`, trun
 ## Điểm cần xác nhận trước khi hiện thực
 
 1. Nguồn token và claim vai trò/trung tâm; hệ thống nào chịu trách nhiệm xác thực.
-2. API phiếu bảo hành, tập trạng thái cho phép xuất và hành vi khi dịch vụ phiếu không phản hồi.
-3. Có lưu người thực hiện trong `part_transaction` hay không và khóa ngoại nào đại diện cho nhân viên.
-4. Cách biểu diễn ngưỡng chưa thiết lập và dòng tồn chưa được tạo.
-5. Ánh xạ endpoint và response vào cấu trúc bảng sau khi giải quyết khác biệt giữa báo cáo, ERD Draw.io và SQL DDL.
+2. API phiếu bảo hành, danh sách trạng thái cho phép xuất và hành vi khi dịch vụ phiếu không phản hồi.
+3. Ánh xạ endpoint và response vào cấu trúc bảng sau khi kết thúc DDL.

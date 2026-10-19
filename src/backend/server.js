@@ -1,63 +1,73 @@
 const express = require("express");
-const { Pool } = require("pg");
+const cors = require("cors");
 const path = require("path");
 require("dotenv").config({
-    path: path.join(__dirname, "../../.env")
+  path: path.join(__dirname, "../../.env"),
 });
+
+const { pool } = require("./src/config/db");
+const errorHandler = require("./src/middleware/errorHandler");
+
+// Import Routes
+const authRoutes = require("./src/routes/auth.routes");
+const partRoutes = require("./src/routes/part.routes");
+const stockRoutes = require("./src/routes/stock.routes");
+const ticketRoutes = require("./src/routes/ticket.routes");
 
 const app = express();
 const PORT = process.env.APP_PORT || 3000;
 
-// Cho phép server nhận dữ liệu JSON
+// Middleware cơ bản
+app.use(cors());
 app.use(express.json());
 
-// Kết nối PostgreSQL
-const pool = new Pool({
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    database: process.env.DB_NAME,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD
-});
+// Kiểm tra kết nối PostgreSQL khi khởi động
+pool
+  .connect()
+  .then((client) => {
+    console.log("PostgreSQL connected successfully!");
+    client.release();
+  })
+  .catch((err) => {
+    console.error("PostgreSQL connection failed:", err.message);
+  });
 
-// Kiểm tra kết nối PostgreSQL
-pool.connect()
-    .then(client => {
-        console.log("PostgreSQL connected successfully!");
-        client.release();
-    })
-    .catch(err => {
-        console.error("PostgreSQL connection failed:", err.message);
-    });
-
-// Endpoint kiểm tra Backend
+// Endpoint kiểm tra Backend (Smoke test)
 app.get("/api/hello", (req, res) => {
-    res.json({
-        message: "Hello Smart CRM"
-    });
+  res.json({
+    message: "Hello Smart CRM - Luồng L5 Kho linh kiện thay thế",
+    status: "online",
+  });
 });
 
 // Endpoint kiểm tra Database
-app.get("/api/db-test", async (req, res) => {
-    try {
-        const result = await pool.query("SELECT NOW() AS current_time");
-
-        res.json({
-            message: "Database connected successfully!",
-            database: process.env.DB_NAME,
-            time: result.rows[0].current_time
-        });
-    } catch (error) {
-        console.error("Database error:", error.message);
-
-        res.status(500).json({
-            message: "Database connection failed",
-            error: error.message
-        });
-    }
+app.get("/api/db-test", async (req, res, next) => {
+  try {
+    const result = await pool.query("SELECT NOW() AS current_time");
+    res.json({
+      message: "Database connected successfully!",
+      database: process.env.DB_NAME,
+      time: result.rows[0].current_time,
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
-// Khởi động server
-app.listen(PORT, () => {
+// Mount các router nghiệp vụ L5
+app.use("/api/auth", authRoutes);
+app.use("/api/parts", partRoutes);
+app.use("/api/stock", stockRoutes);
+app.use("/api/tickets", ticketRoutes);
+
+// Middleware xử lý lỗi tập trung theo chuẩn Buổi 7 (luôn đặt ở cuối cùng)
+app.use(errorHandler);
+
+// Khởi động server nếu chạy trực tiếp
+if (require.main === module) {
+  app.listen(PORT, () => {
     console.log(`Backend running at http://localhost:${PORT}`);
-});
+  });
+}
+
+module.exports = app;

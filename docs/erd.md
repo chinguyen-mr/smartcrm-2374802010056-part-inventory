@@ -1,57 +1,116 @@
-# Mô hình dữ liệu cho luồng L5
+# Mô hình dữ liệu – Smart CRM Luồng L5
 
-Tài liệu này giải thích mô hình dữ liệu của BT1 và đối chiếu với sơ đồ [`diagrams/erd.drawio`](diagrams/erd.drawio). Mô hình là thiết kế đề xuất; cần giải quyết các khác biệt được nêu ở cuối tài liệu trước khi chốt DDL hoặc migration.
+Tài liệu này mô tả schema đã được chốt cho BT2 và đối chiếu với sơ đồ [`diagrams/erd.drawio`](diagrams/erd.drawio). Mọi khác biệt giữa BT1 và BT2 đã được giải quyết; DDL tại `db/sql-ddl.sql` là nguồn sự thật duy nhất.
 
-## Thực thể trong sơ đồ ERD
+## 4.1 Sơ đồ ERD
 
-| Bảng | Khóa | Thuộc tính chính | Vai trò |
+Xem file [`diagrams/erd.drawio`](diagrams/erd.drawio). Ký hiệu theo chuẩn crow's foot (IE notation).
+
+## 4.2 Mô tả bảng
+
+| Bảng | Khóa chính | Thuộc tính chính | Vai trò |
 |---|---|---|---|
-| `service_center` | `center_id` (PK) | `center_code` (duy nhất), `center_name` | Danh mục trung tâm bảo hành. |
-| `part` | `part_id` (PK) | `part_code` (duy nhất), `part_name`, `unit_price` | Danh mục linh kiện thay thế. |
-| `part_stock` | (`center_id`, `part_id`) (PK ghép, FK) | `quantity >= 0`, `min_threshold`, `updated_at` | Số dư hiện tại cho một cặp trung tâm/linh kiện; mỗi cặp tối đa một dòng. |
-| `ticket_ref` | `ticket_id` (PK) | `center_id` (FK), `ticket_code` (duy nhất) | Tham chiếu phiếu bảo hành theo thiết kế trong sơ đồ. Cần xác nhận dữ liệu có thực sự lưu nội bộ hay do hệ thống ngoài quản lý. |
-| `part_transaction` | `transaction_id` (PK) | `center_id`, `part_id`, `ticket_id` có thể rỗng, `type`, `quantity > 0`, `occurred_at`, `reference` | Sổ lịch sử nhập/xuất; `type` là `NHAP` hoặc `XUAT`. |
-| `ticket_part` | `ticket_part_id` (PK) | `ticket_id` (FK), `part_id` (FK), `transaction_id` (FK) | Liên kết phiếu, linh kiện và giao dịch xuất tương ứng. |
+| `service_center` | `center_id` (PK, IDENTITY) | `center_code` UNIQUE, `center_name` | Danh mục trung tâm bảo hành. |
+| `part` | `part_id` (PK, IDENTITY) | `part_code` UNIQUE, `part_name`, `unit_price NUMERIC(12,2)` | Danh mục linh kiện thay thế. |
+| `part_stock` | (`center_id`, `part_id`) (PK ghép, FK) | `quantity >= 0`, `min_threshold >= 0 NOT NULL`, `updated_at` | Số dư tồn kho hiện tại theo cặp trung tâm/linh kiện. Mỗi cặp có tối đa một dòng. |
+| `ticket_ref` | `ticket_id` (PK, IDENTITY) | `center_id` (FK), `ticket_code` UNIQUE | Tham chiếu phiếu bảo hành từ hệ thống ngoài; lưu nội bộ để kiểm tra đúng trung tâm khi xuất. |
+| `ticket_part` | `ticket_part_id` (PK, IDENTITY) | `ticket_id` (FK), `part_id` (FK), `transaction_id` (FK nullable) | Liên kết giữa phiếu và linh kiện; `transaction_id` được cập nhật sau khi giao dịch xuất ghi thành công. |
+| `part_transaction` | `transaction_id` (PK, IDENTITY) | `center_id` (FK), `part_id` (FK), `ticket_part_id` (FK nullable), `type`, `quantity > 0`, `occurred_at`, `reference` | Sổ lịch sử nhập/xuất bất biến theo QT-13. `type` là `NHAP` hoặc `XUAT`. |
 
-Quan hệ chính: một trung tâm và một linh kiện có thể xuất hiện trong nhiều dòng tồn/giao dịch; một phiếu có thể liên quan đến nhiều giao dịch/linh kiện. Chi tiết bội số và tính duy nhất cần được chốt cùng quy tắc chống ghi trùng giao dịch.
+## 4.2.1 Chi tiết bảng `service_center`
 
-## Đối chiếu với bộ dữ liệu L5
-
-Kiểm tra chỉ đọc các tệp `parts.csv`, `service_centers.csv`, `part_stock.csv`, `part_transactions.csv` và `tickets_history.csv` trong bộ dữ liệu tham chiếu cho thấy:
-
-- Có 180 linh kiện và 6 trung tâm, tương đương 1.080 tổ hợp trung tâm/linh kiện có thể có; `part_stock.csv` có 717 dòng và không có cặp trùng.
-- Có 4.954 giao dịch: 891 `NHAP` và 4.063 `XUAT`. Mọi `part_id`/`center_id` trong giao dịch khớp danh mục; mọi mã phiếu của dòng `XUAT` khớp `tickets_history.csv`.
-- Các khóa `part_id`, `part_code`, `center_id`, `center_code`, `transaction_id`, `ticket_id` và `ticket_code` không bị trùng trong các tệp tương ứng. Số lượng giao dịch đều là số nguyên dương; đơn giá không âm; ngày giao dịch đọc được.
-- Không có số lượng tồn hoặc ngưỡng âm trong các dòng tồn quan sát được. Các ngưỡng hiện có đều được điền (từ 3 đến 8), nên mẫu dữ liệu không quyết định chính sách cho ngưỡng chưa cấu hình.
-- Theo tổng hợp toàn bộ các giao dịch trong bộ mẫu, số tồn từng cặp khớp tổng `NHAP` trừ `XUAT`. Đây chỉ là tính nhất quán số học của bộ mẫu; `part_stock.csv` không cung cấp ngày snapshot để xác định dữ liệu là tồn tại thời điểm nào.
-
-Các tệp CSV là dữ liệu tham chiếu, không phải bằng chứng rằng schema Draw.io hoặc DDL hiện tại đã chạy trên cơ sở dữ liệu thật.
-
-## Quy tắc dữ liệu
-
-- Số lượng tồn không âm; lượng của mỗi giao dịch là số nguyên dương.
-- `part_code` là duy nhất; đơn giá không âm.
-- Giao dịch nhập không cần phiếu; giao dịch xuất phải gắn với phiếu hợp lệ và đúng trung tâm.
-- Giao dịch đã ghi là lịch sử, không sửa hoặc xóa vật lý theo QT-13.
-- Cảnh báo được tính khi `quantity < min_threshold`; bằng ngưỡng thì không cảnh báo.
-- Nếu chưa có dòng tồn, nghiệp vụ tra cứu hiển thị số lượng 0. Cách tạo dòng tồn và trạng thái ngưỡng chưa cấu hình cần được thống nhất.
-
-## Khác biệt cần giải quyết trước khi chốt mô hình
-
-| Chủ đề | Báo cáo BT1 / tài liệu mô tả | ERD Draw.io | Việc cần quyết định |
+| Cột | Kiểu | Ràng buộc | Mô tả |
 |---|---|---|---|
-| Nhân viên thực hiện | Phần DDL trong báo cáo có bảng `employee` và `employee_id` trong `part_transaction`; phần mô tả cũng ghi nhận nguồn định danh chưa xác nhận. | Không có bảng `employee` và không có thuộc tính người thực hiện trên giao dịch. | Xác nhận yêu cầu lưu người thực hiện và nguồn định danh. Không thêm/bỏ FK trước khi chốt. |
-| Tham chiếu phiếu | Một số phần của báo cáo dùng `ticket_ref`/`ticket_id`; DDL ở cuối lại dùng `ticket_code` trong giao dịch và `ticket_part`, không tạo `ticket_ref`. | Có `ticket_ref.ticket_id`; `part_transaction.ticket_id` và `ticket_part.ticket_id`. | Xác nhận phiếu là dữ liệu nội bộ hay chỉ được xác minh từ hệ thống ngoài, rồi chọn một kiểu liên kết thống nhất. |
-| `ticket_part` | Phần mô tả bảng nêu `ticket_part_id`, `ticket_id`, `part_id`, `transaction_id`; DDL trong báo cáo lại dùng khóa ghép `(ticket_code, center_id, part_id)` và không có `transaction_id`. | Dùng khóa thay thế `ticket_part_id` và FK tới `transaction_id`. | Chọn một cấu trúc duy nhất, bảo đảm một giao dịch xuất liên kết đúng phiếu và linh kiện. |
-| Ngưỡng cảnh báo | DDL báo cáo cho phép `min_threshold` rỗng; phần mô tả thuộc tính ghi `NOT NULL`. | Sơ đồ ghi `min_threshold >= 0`, không làm rõ có thể rỗng hay không. | Chốt cách biểu diễn ngưỡng chưa được cấu hình và quy tắc cảnh báo tương ứng. |
-| Tên/kiểu bảng | Báo cáo có đề xuất `service_center`, `ticket_ref` và một số kiểu khóa cần xác nhận. | ERD dùng `ticket_id BIGINT`; bảng phiếu là tham chiếu nội bộ trong hình. | Đối chiếu schema Smart CRM và hợp đồng tích hợp trước khi thiết kế migration. |
+| `center_id` | BIGINT | PK, IDENTITY | Khóa kỹ thuật tự tăng. |
+| `center_code` | VARCHAR(20) | NOT NULL, UNIQUE | Mã trung tâm do nghiệp vụ đặt. |
+| `center_name` | VARCHAR(120) | NOT NULL | Tên đầy đủ của trung tâm. |
 
-## Kiểm tra ERD theo yêu cầu Buổi 6
+## 4.2.2 Chi tiết bảng `part`
 
-- Bảng tồn tại độc lập với sổ giao dịch để tra cứu nhanh; lịch sử nhập/xuất được lưu riêng ở `part_transaction`.
-- Không lưu cờ cảnh báo trùng lặp nếu có thể suy ra từ số lượng và ngưỡng.
-- Các khóa chính kỹ thuật được dùng cho các thực thể chính; `part_stock` dùng khóa ghép theo cặp trung tâm/linh kiện.
-- Các index cần dựa trên truy vấn thực tế, tối thiểu xem xét truy vấn lịch sử theo trung tâm, linh kiện, thời gian và theo phiếu.
-- Sơ đồ hiện không thể hiện nhân viên; cần đánh giá lại yêu cầu lưu người thực hiện trước khi kết luận rằng toàn bộ thực thể cần thiết đã có.
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|---|---|---|---|
+| `part_id` | BIGINT | PK, IDENTITY | Khóa kỹ thuật tự tăng. |
+| `part_code` | VARCHAR(30) | NOT NULL, UNIQUE | Mã linh kiện do nghiệp vụ đặt. |
+| `part_name` | VARCHAR(120) | NOT NULL | Tên linh kiện. |
+| `unit_price` | NUMERIC(12,2) | NOT NULL, >= 0 | Đơn giá; lưu 2 chữ số thập phân. |
 
-Không tuyên bố DDL đã chạy hoặc ERD đã được chốt. Cần kiểm tra khóa ngoại ghép, ràng buộc duy nhất, cập nhật tồn đồng thời và tính nhất quán giữa `part_transaction` với `ticket_part` khi thống nhất mô hình.
+## 4.2.3 Chi tiết bảng `part_stock`
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|---|---|---|---|
+| `center_id` | BIGINT | PK, FK → service_center | Trung tâm. |
+| `part_id` | BIGINT | PK, FK → part | Linh kiện. |
+| `quantity` | INTEGER | NOT NULL, DEFAULT 0, >= 0 | Số lượng tồn hiện tại; không âm. |
+| `min_threshold` | INTEGER | NOT NULL, DEFAULT 0, >= 0 | Ngưỡng cảnh báo. Mặc định 0 khi chưa cấu hình (không cảnh báo). |
+| `updated_at` | TIMESTAMPTZ | NOT NULL, DEFAULT now() | Thời điểm cập nhật tồn gần nhất. |
+
+## 4.2.4 Chi tiết bảng `ticket_ref`
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|---|---|---|---|
+| `ticket_id` | BIGINT | PK, IDENTITY | Khóa kỹ thuật nội bộ. |
+| `center_id` | BIGINT | NOT NULL, FK → service_center | Trung tâm xử lý phiếu. |
+| `ticket_code` | VARCHAR(20) | NOT NULL, UNIQUE | Mã phiếu từ hệ thống ngoài. |
+
+## 4.2.5 Chi tiết bảng `ticket_part`
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|---|---|---|---|
+| `ticket_part_id` | BIGINT | PK, IDENTITY | Khóa kỹ thuật tự tăng. |
+| `ticket_id` | BIGINT | NOT NULL, FK → ticket_ref | Phiếu bảo hành. |
+| `part_id` | BIGINT | NOT NULL, FK → part | Linh kiện được xuất. |
+| `transaction_id` | BIGINT | FK → part_transaction, nullable | Giao dịch xuất tương ứng; điền sau khi giao dịch ghi thành công. |
+| `created_at` | TIMESTAMPTZ | NOT NULL, DEFAULT now() | Thời điểm tạo bản ghi. |
+
+## 4.2.6 Chi tiết bảng `part_transaction`
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|---|---|---|---|
+| `transaction_id` | BIGINT | PK, IDENTITY | Khóa kỹ thuật tự tăng. |
+| `center_id` | BIGINT | NOT NULL, FK → service_center | Trung tâm thực hiện giao dịch. |
+| `part_id` | BIGINT | NOT NULL, FK → part | Linh kiện. |
+| `ticket_part_id` | BIGINT | FK → ticket_part, nullable | Liên kết phiếu/linh kiện; bắt buộc khi `type = XUAT`. |
+| `type` | VARCHAR(10) | NOT NULL, IN ('NHAP','XUAT') | Loại giao dịch. |
+| `quantity` | INTEGER | NOT NULL, > 0 | Số lượng nhập/xuất; luôn dương. |
+| `occurred_at` | TIMESTAMPTZ | NOT NULL, DEFAULT now() | Thời điểm ghi nhận giao dịch. |
+| `reference` | VARCHAR(80) | nullable | Số phiếu nhập hoặc ghi chú tham chiếu. |
+
+**Ràng buộc CHECK:** `(type = 'NHAP' AND ticket_part_id IS NULL) OR (type = 'XUAT' AND ticket_part_id IS NOT NULL)`
+
+## 4.3 Quan hệ
+
+```
+service_center ──< part_stock >── part
+service_center ──< ticket_ref
+ticket_ref     ──< ticket_part >── part
+ticket_part    ──< part_transaction
+service_center ──< part_transaction
+part           ──< part_transaction
+```
+
+- Một trung tâm và một linh kiện có đúng một dòng tồn (`part_stock`).
+- Một phiếu (`ticket_ref`) có thể liên quan đến nhiều linh kiện (`ticket_part`).
+- Một `ticket_part` tương ứng đúng một giao dịch xuất (`part_transaction`).
+- Mỗi giao dịch nhập không liên kết phiếu; mỗi giao dịch xuất bắt buộc có `ticket_part_id`.
+
+## 4.4 SQL DDL
+
+Xem toàn bộ DDL tại [`db/sql-ddl.sql`](../db/sql-ddl.sql).
+
+## 4.5 Quy tắc dữ liệu
+
+- Số lượng tồn không âm; số lượng mỗi giao dịch là số nguyên dương.
+- `part_code` và `ticket_code` là duy nhất trên toàn hệ thống.
+- `unit_price` lưu 2 chữ số thập phân, không âm.
+- Giao dịch xuất phải gắn với phiếu hợp lệ, cùng trung tâm với phiếu.
+- Giao dịch đã ghi không được sửa hoặc xóa vật lý (QT-13).
+- Cảnh báo khi `quantity < min_threshold`; bằng ngưỡng thì không cảnh báo.
+- Khi `min_threshold = 0` (chưa cấu hình), không phát sinh cảnh báo trừ khi tồn âm (không được phép).
+
+## 4.6 Index
+
+| Index | Bảng | Cột | Mục đích |
+|---|---|---|---|
+| `idx_part_stock_alert` | `part_stock` | `(center_id, quantity, min_threshold)` | Lọc cảnh báo tồn dưới ngưỡng (UC4, UC5). |
+| `idx_part_transaction_history` | `part_transaction` | `(center_id, part_id, occurred_at DESC)` | Tra cứu lịch sử theo trung tâm, linh kiện, thời gian (UC7). |
+| `idx_part_transaction_ticket_part` | `part_transaction` | `(ticket_part_id) WHERE NOT NULL` | Tra cứu giao dịch xuất theo phiếu (UC8). |

@@ -1,8 +1,8 @@
-# Đặc tả yêu cầu phần mềm cho Smart CRM L5
+# Đặc tả yêu cầu phần mềm – Smart CRM Luồng L5
 
 ## 1. Mục đích và phạm vi
 
-Luồng L5 quản lý tồn kho linh kiện thay thế tại các trung tâm bảo hành. Tài liệu này xác định yêu cầu nghiệp vụ, vai trò, tiêu chí chấp nhận và các mục tiêu chất lượng làm căn cứ cho Use Case, API contract, kiến trúc và mô hình dữ liệu.
+Luồng L5 quản lý tồn kho linh kiện thay thế tại các trung tâm bảo hành. Tài liệu này xác định yêu cầu nghiệp vụ, vai trò, tiêu chí chấp nhận và các mục tiêu chất lượng làm căn cứ cho Use Case, API contract, kiến trúc và mô hình dữ liệu. Đây là phiên bản chính thức cho BT2; schema đã được chốt tại `db/sql-ddl.sql`.
 
 **Trong phạm vi:** tra cứu linh kiện/tồn theo trung tâm; nhập kho; xuất linh kiện gắn với phiếu bảo hành; cảnh báo tồn dưới ngưỡng; cấu hình ngưỡng; xem lịch sử giao dịch và xem linh kiện đã xuất theo phiếu.
 
@@ -20,7 +20,7 @@ Luồng L5 quản lý tồn kho linh kiện thay thế tại các trung tâm b�
 | `part_transaction` | Sổ ghi nhận bất biến các giao dịch `NHAP` và `XUAT`. |
 | `min_threshold` | Ngưỡng cảnh báo theo cặp trung tâm/linh kiện; cảnh báo khi tồn nhỏ hơn ngưỡng. |
 
-Các tên bảng khác như `service_center`, `ticket_ref` và cấu trúc `ticket_part` là lựa chọn thiết kế đang được đối chiếu, chưa khẳng định là schema của hệ thống tổng thể.
+Schema chính thức gồm các bảng: `service_center`, `part`, `part_stock`, `ticket_ref`, `ticket_part`, `part_transaction`. Xem chi tiết tại `docs/erd.md` và `db/sql-ddl.sql`.
 
 ## 3. User Story và mức ưu tiên
 
@@ -67,8 +67,6 @@ Các giá trị trung tâm và số lượng trong tiêu chí là dữ liệu mi
 | FR10 | QLTT xem lịch sử theo trung tâm, linh kiện, loại và khoảng ngày; sắp xếp theo thời gian và phân trang. | SHOULD | US6, UC7 |
 | FR11 | KTV xem các linh kiện đã xuất cho một phiếu bảo hành. | SHOULD | US7, UC8 |
 
-FR9 yêu cầu lưu người thực hiện trong một số mô tả của báo cáo, nhưng schema và sơ đồ ERD không thống nhất về dữ liệu nhân viên. Cần xác nhận nguồn định danh và cách lưu trước khi chốt mô hình.
-
 ## 6. Yêu cầu phi chức năng
 
 Các ngưỡng dưới đây là mục tiêu đề xuất cho prototype. Chỉ ghi nhận đạt/không đạt sau khi thực hiện đo hoặc kiểm thử.
@@ -90,10 +88,10 @@ Các ngưỡng dưới đây là mục tiêu đề xuất cho prototype. Chỉ g
 | QT-14 | Người dùng chỉ xem/ghi dữ liệu của trung tâm được phân quyền. |
 | QT-L5-1 | Mỗi cặp trung tâm/linh kiện có tối đa một dòng tồn; tồn không âm; mã linh kiện duy nhất. |
 | G1 | Cơ chế đăng nhập và nguồn claim người dùng/trung tâm sẽ tích hợp với dịch vụ hiện có. |
-| G2 | Hệ thống phiếu cung cấp API tra cứu phiếu; các trạng thái cho phép xuất chưa được chốt. |
-| G3 | Cần xác định cách lưu người thực hiện giao dịch. |
-| G4 | Cần chốt biểu diễn ngưỡng chưa cấu hình và liệu ngưỡng có bắt buộc ngay khi tạo dòng tồn. |
-| G5 | Nếu chưa có dòng tồn, tra cứu hiển thị 0; nhập lần đầu cần tạo dòng tồn tương thích với khóa ghép. |
+| G2 | Hệ thống phiếu cung cấp API tra cứu phiếu; danh sách trạng thái cho phép xuất sẽ được chốt khi tích hợp. |
+| G3 | `part_transaction` không lưu `employee_id`; thông tin người thực hiện được quản lý ở tầng xác thực. |
+| G4 | `min_threshold` là NOT NULL DEFAULT 0; khi chưa cấu hình, giá trị 0 có nghĩa là không cảnh báo cho đến khi QLTT đặt ngưỡng thực tế. |
+| G5 | Nếu chưa có dòng tồn, tra cứu trả về 0; nhập lần đầu tạo dòng tồn trong cùng một transaction nguyên tử. |
 
 ## 8. Kiểm tra bộ dữ liệu tham chiếu và code hiện có
 
@@ -107,9 +105,7 @@ Các ngưỡng dưới đây là mục tiêu đề xuất cho prototype. Chỉ g
 | `part_transactions.csv` | 4.954 | 891 `NHAP`, 4.063 `XUAT`; các mã linh kiện/trung tâm đều ánh xạ được tới danh mục. |
 | `tickets_history.csv` | 7.800 | 7.800 mã phiếu phân biệt; mọi mã phiếu của 4.063 dòng `XUAT` đều tìm thấy trong tệp này. |
 
-Toàn bộ tổ hợp lý thuyết là `6 × 180 = 1.080`; có 363 tổ hợp chưa có dòng trong `part_stock`. Trong bộ dữ liệu được kiểm tra, số tồn của các cặp khớp với tổng nhập trừ tổng xuất theo các giao dịch được cung cấp. Đây là kết quả đối chiếu bộ mẫu, không phải bảo đảm cho dữ liệu triển khai. Tệp tồn không ghi thời điểm snapshot riêng, nên không suy ra dữ liệu đại diện cho tồn hiện tại của môi trường thật. Các trạng thái phiếu xuất hiện trong CSV cũng không đủ để kết luận trạng thái nào được phép xuất.
-
-Đọc code backend hiện có cho thấy `server.js` mới có `/api/hello` và `/api/db-test`; chưa có endpoint nghiệp vụ L5. Vì vậy API contract, kiến trúc và các yêu cầu trong tài liệu là thiết kế, không phải mô tả tính năng đã chạy.
+Toàn bộ tổ hợp lý thuyết là `6 × 180 = 1.080`; có 363 tổ hợp chưa có dòng trong `part_stock`. Trong bộ dữ liệu kiểm tra, số tồn của các cặp khớp với tổng nhập trừ tổng xuất. Tệp tồn không ghi thời điểm snapshot riêng nên không đại diện cho tồn tại thời điểm bất kỳ. Các trạng thái phiếu trong CSV chưa đủ để kết luận trạng thái nào cho phép xuất.
 
 ## 9. Truy vết yêu cầu
 

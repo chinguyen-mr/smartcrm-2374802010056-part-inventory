@@ -24,5 +24,7 @@ models/*.pt
 # IDE / OS
 .vscode/
 .idea/
+.postman/
+postman/
 .DS_Store
 Thumbs.db

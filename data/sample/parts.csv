@@ -1,0 +1,181 @@
+part_id,part_code,part_name,unit_price
+1,MH-SS-01,Màn hình Samsung loại 1,2200000
+2,MH-SS-02,Màn hình Samsung loại 2,150000
+3,MH-SS-03,Màn hình Samsung loại 3,150000
+4,MH-XM-01,Màn hình Xiaomi loại 1,280000
+5,MH-XM-02,Màn hình Xiaomi loại 2,650000
+6,MH-XM-03,Màn hình Xiaomi loại 3,1450000
+7,MH-OP-01,Màn hình OPPO loại 1,2200000
+8,MH-OP-02,Màn hình OPPO loại 2,2200000
+9,MH-OP-03,Màn hình OPPO loại 3,420000
+10,MH-RM-01,Màn hình realme loại 1,2200000
+11,MH-RM-02,Màn hình realme loại 2,650000
+12,MH-RM-03,Màn hình realme loại 3,650000
+13,MH-VV-01,Màn hình vivo loại 1,280000
+14,MH-VV-02,Màn hình vivo loại 2,420000
+15,MH-VV-03,Màn hình vivo loại 3,650000
+16,MH-AP-01,Màn hình Apple loại 1,420000
+17,MH-AP-02,Màn hình Apple loại 2,650000
+18,MH-AP-03,Màn hình Apple loại 3,980000
+19,PIN-SS-01,Pin Samsung loại 1,1450000
+20,PIN-SS-02,Pin Samsung loại 2,650000
+21,PIN-SS-03,Pin Samsung loại 3,980000
+22,PIN-XM-01,Pin Xiaomi loại 1,1450000
+23,PIN-XM-02,Pin Xiaomi loại 2,980000
+24,PIN-XM-03,Pin Xiaomi loại 3,2200000
+25,PIN-OP-01,Pin OPPO loại 1,980000
+26,PIN-OP-02,Pin OPPO loại 2,280000
+27,PIN-OP-03,Pin OPPO loại 3,650000
+28,PIN-RM-01,Pin realme loại 1,2200000
+29,PIN-RM-02,Pin realme loại 2,150000
+30,PIN-RM-03,Pin realme loại 3,420000
+31,PIN-VV-01,Pin vivo loại 1,980000
+32,PIN-VV-02,Pin vivo loại 2,2200000
+33,PIN-VV-03,Pin vivo loại 3,420000
+34,PIN-AP-01,Pin Apple loại 1,650000
+35,PIN-AP-02,Pin Apple loại 2,420000
+36,PIN-AP-03,Pin Apple loại 3,150000
+37,CS-SS-01,Cổng sạc Samsung loại 1,650000
+38,CS-SS-02,Cổng sạc Samsung loại 2,280000
+39,CS-SS-03,Cổng sạc Samsung loại 3,980000
+40,CS-XM-01,Cổng sạc Xiaomi loại 1,650000
+41,CS-XM-02,Cổng sạc Xiaomi loại 2,2200000
+42,CS-XM-03,Cổng sạc Xiaomi loại 3,150000
+43,CS-OP-01,Cổng sạc OPPO loại 1,2200000
+44,CS-OP-02,Cổng sạc OPPO loại 2,980000
+45,CS-OP-03,Cổng sạc OPPO loại 3,650000
+46,CS-RM-01,Cổng sạc realme loại 1,2200000
+47,CS-RM-02,Cổng sạc realme loại 2,980000
+48,CS-RM-03,Cổng sạc realme loại 3,980000
+49,CS-VV-01,Cổng sạc vivo loại 1,2200000
+50,CS-VV-02,Cổng sạc vivo loại 2,280000
+51,CS-VV-03,Cổng sạc vivo loại 3,1450000
+52,CS-AP-01,Cổng sạc Apple loại 1,980000
+53,CS-AP-02,Cổng sạc Apple loại 2,280000
+54,CS-AP-03,Cổng sạc Apple loại 3,980000
+55,CAM-SS-01,Camera sau Samsung loại 1,150000
+56,CAM-SS-02,Camera sau Samsung loại 2,980000
+57,CAM-SS-03,Camera sau Samsung loại 3,650000
+58,CAM-XM-01,Camera sau Xiaomi loại 1,1450000
+59,CAM-XM-02,Camera sau Xiaomi loại 2,2200000
+60,CAM-XM-03,Camera sau Xiaomi loại 3,980000
+61,CAM-OP-01,Camera sau OPPO loại 1,1450000
+62,CAM-OP-02,Camera sau OPPO loại 2,2200000
+63,CAM-OP-03,Camera sau OPPO loại 3,650000
+64,CAM-RM-01,Camera sau realme loại 1,420000
+65,CAM-RM-02,Camera sau realme loại 2,420000
+66,CAM-RM-03,Camera sau realme loại 3,2200000
+67,CAM-VV-01,Camera sau vivo loại 1,1450000
+68,CAM-VV-02,Camera sau vivo loại 2,420000
+69,CAM-VV-03,Camera sau vivo loại 3,2200000
+70,CAM-AP-01,Camera sau Apple loại 1,420000
+71,CAM-AP-02,Camera sau Apple loại 2,420000
+72,CAM-AP-03,Camera sau Apple loại 3,2200000
+73,LOA-SS-01,Loa ngoài Samsung loại 1,650000
+74,LOA-SS-02,Loa ngoài Samsung loại 2,980000
+75,LOA-SS-03,Loa ngoài Samsung loại 3,1450000
+76,LOA-XM-01,Loa ngoài Xiaomi loại 1,280000
+77,LOA-XM-02,Loa ngoài Xiaomi loại 2,2200000
+78,LOA-XM-03,Loa ngoài Xiaomi loại 3,980000
+79,LOA-OP-01,Loa ngoài OPPO loại 1,2200000
+80,LOA-OP-02,Loa ngoài OPPO loại 2,980000
+81,LOA-OP-03,Loa ngoài OPPO loại 3,1450000
+82,LOA-RM-01,Loa ngoài realme loại 1,1450000
+83,LOA-RM-02,Loa ngoài realme loại 2,420000
+84,LOA-RM-03,Loa ngoài realme loại 3,2200000
+85,LOA-VV-01,Loa ngoài vivo loại 1,150000
+86,LOA-VV-02,Loa ngoài vivo loại 2,650000
+87,LOA-VV-03,Loa ngoài vivo loại 3,980000
+88,LOA-AP-01,Loa ngoài Apple loại 1,280000
+89,LOA-AP-02,Loa ngoài Apple loại 2,650000
+90,LOA-AP-03,Loa ngoài Apple loại 3,980000
+91,MIC-SS-01,Mic Samsung loại 1,280000
+92,MIC-SS-02,Mic Samsung loại 2,650000
+93,MIC-SS-03,Mic Samsung loại 3,650000
+94,MIC-XM-01,Mic Xiaomi loại 1,280000
+95,MIC-XM-02,Mic Xiaomi loại 2,150000
+96,MIC-XM-03,Mic Xiaomi loại 3,980000
+97,MIC-OP-01,Mic OPPO loại 1,980000
+98,MIC-OP-02,Mic OPPO loại 2,150000
+99,MIC-OP-03,Mic OPPO loại 3,280000
+100,MIC-RM-01,Mic realme loại 1,2200000
+101,MIC-RM-02,Mic realme loại 2,980000
+102,MIC-RM-03,Mic realme loại 3,150000
+103,MIC-VV-01,Mic vivo loại 1,2200000
+104,MIC-VV-02,Mic vivo loại 2,980000
+105,MIC-VV-03,Mic vivo loại 3,150000
+106,MIC-AP-01,Mic Apple loại 1,420000
+107,MIC-AP-02,Mic Apple loại 2,420000
+108,MIC-AP-03,Mic Apple loại 3,650000
+109,NN-SS-01,Nút nguồn Samsung loại 1,280000
+110,NN-SS-02,Nút nguồn Samsung loại 2,280000
+111,NN-SS-03,Nút nguồn Samsung loại 3,650000
+112,NN-XM-01,Nút nguồn Xiaomi loại 1,1450000
+113,NN-XM-02,Nút nguồn Xiaomi loại 2,420000
+114,NN-XM-03,Nút nguồn Xiaomi loại 3,650000
+115,NN-OP-01,Nút nguồn OPPO loại 1,420000
+116,NN-OP-02,Nút nguồn OPPO loại 2,150000
+117,NN-OP-03,Nút nguồn OPPO loại 3,980000
+118,NN-RM-01,Nút nguồn realme loại 1,280000
+119,NN-RM-02,Nút nguồn realme loại 2,150000
+120,NN-RM-03,Nút nguồn realme loại 3,280000
+121,NN-VV-01,Nút nguồn vivo loại 1,980000
+122,NN-VV-02,Nút nguồn vivo loại 2,650000
+123,NN-VV-03,Nút nguồn vivo loại 3,150000
+124,NN-AP-01,Nút nguồn Apple loại 1,280000
+125,NN-AP-02,Nút nguồn Apple loại 2,280000
+126,NN-AP-03,Nút nguồn Apple loại 3,1450000
+127,CMH-SS-01,Cáp màn hình Samsung loại 1,280000
+128,CMH-SS-02,Cáp màn hình Samsung loại 2,650000
+129,CMH-SS-03,Cáp màn hình Samsung loại 3,650000
+130,CMH-XM-01,Cáp màn hình Xiaomi loại 1,2200000
+131,CMH-XM-02,Cáp màn hình Xiaomi loại 2,420000
+132,CMH-XM-03,Cáp màn hình Xiaomi loại 3,280000
+133,CMH-OP-01,Cáp màn hình OPPO loại 1,280000
+134,CMH-OP-02,Cáp màn hình OPPO loại 2,150000
+135,CMH-OP-03,Cáp màn hình OPPO loại 3,1450000
+136,CMH-RM-01,Cáp màn hình realme loại 1,150000
+137,CMH-RM-02,Cáp màn hình realme loại 2,650000
+138,CMH-RM-03,Cáp màn hình realme loại 3,150000
+139,CMH-VV-01,Cáp màn hình vivo loại 1,420000
+140,CMH-VV-02,Cáp màn hình vivo loại 2,1450000
+141,CMH-VV-03,Cáp màn hình vivo loại 3,150000
+142,CMH-AP-01,Cáp màn hình Apple loại 1,2200000
+143,CMH-AP-02,Cáp màn hình Apple loại 2,150000
+144,CMH-AP-03,Cáp màn hình Apple loại 3,150000
+145,KS-SS-01,Khay sim Samsung loại 1,1450000
+146,KS-SS-02,Khay sim Samsung loại 2,650000
+147,KS-SS-03,Khay sim Samsung loại 3,150000
+148,KS-XM-01,Khay sim Xiaomi loại 1,150000
+149,KS-XM-02,Khay sim Xiaomi loại 2,420000
+150,KS-XM-03,Khay sim Xiaomi loại 3,980000
+151,KS-OP-01,Khay sim OPPO loại 1,650000
+152,KS-OP-02,Khay sim OPPO loại 2,420000
+153,KS-OP-03,Khay sim OPPO loại 3,280000
+154,KS-RM-01,Khay sim realme loại 1,980000
+155,KS-RM-02,Khay sim realme loại 2,650000
+156,KS-RM-03,Khay sim realme loại 3,1450000
+157,KS-VV-01,Khay sim vivo loại 1,980000
+158,KS-VV-02,Khay sim vivo loại 2,280000
+159,KS-VV-03,Khay sim vivo loại 3,1450000
+160,KS-AP-01,Khay sim Apple loại 1,420000
+161,KS-AP-02,Khay sim Apple loại 2,650000
+162,KS-AP-03,Khay sim Apple loại 3,2200000
+163,KD-SS-01,Keo dán màn Samsung loại 1,1450000
+164,KD-SS-02,Keo dán màn Samsung loại 2,2200000
+165,KD-SS-03,Keo dán màn Samsung loại 3,420000
+166,KD-XM-01,Keo dán màn Xiaomi loại 1,1450000
+167,KD-XM-02,Keo dán màn Xiaomi loại 2,150000
+168,KD-XM-03,Keo dán màn Xiaomi loại 3,980000
+169,KD-OP-01,Keo dán màn OPPO loại 1,420000
+170,KD-OP-02,Keo dán màn OPPO loại 2,980000
+171,KD-OP-03,Keo dán màn OPPO loại 3,1450000
+172,KD-RM-01,Keo dán màn realme loại 1,650000
+173,KD-RM-02,Keo dán màn realme loại 2,650000
+174,KD-RM-03,Keo dán màn realme loại 3,150000
+175,KD-VV-01,Keo dán màn vivo loại 1,1450000
+176,KD-VV-02,Keo dán màn vivo loại 2,280000
+177,KD-VV-03,Keo dán màn vivo loại 3,420000
+178,KD-AP-01,Keo dán màn Apple loại 1,1450000
+179,KD-AP-02,Keo dán màn Apple loại 2,150000
+180,KD-AP-03,Keo dán màn Apple loại 3,420000
