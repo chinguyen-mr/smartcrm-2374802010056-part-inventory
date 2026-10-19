@@ -5,7 +5,9 @@ class StockValidator {
    * Tầng 1: Kiểm định dạng dữ liệu đầu vào cho thao tác Nhập kho (US3, UC3)
    */
   validateReceiptInput(data) {
-    const { center_id, part_id, quantity, reference } = data;
+    const center_id = data.center_id !== undefined ? data.center_id : data.centerId;
+    const part_id = data.part_id !== undefined ? data.part_id : data.partId;
+    const { quantity, reference } = data;
     const errors = [];
 
     const parsedCenterId = Number(center_id);
@@ -48,7 +50,10 @@ class StockValidator {
    * Tầng 1: Kiểm định dạng dữ liệu đầu vào cho thao tác Xuất kho (US2, UC2)
    */
   validateIssueInput(data) {
-    const { center_id, part_id, ticket_code, quantity } = data;
+    const center_id = data.center_id !== undefined ? data.center_id : data.centerId;
+    const part_id = data.part_id !== undefined ? data.part_id : data.partId;
+    const ticket_code = data.ticket_code !== undefined ? data.ticket_code : data.ticketCode;
+    const { quantity } = data;
     const errors = [];
 
     const parsedCenterId = Number(center_id);
@@ -91,7 +96,9 @@ class StockValidator {
    * Tầng 1: Kiểm tra cấu hình ngưỡng cảnh báo (min_threshold)
    */
   validateThresholdInput(data) {
-    const { center_id, part_id, min_threshold } = data;
+    const center_id = data.center_id !== undefined ? data.center_id : data.centerId;
+    const part_id = data.part_id !== undefined ? data.part_id : data.partId;
+    const min_threshold = data.min_threshold !== undefined ? data.min_threshold : data.minThreshold;
     const errors = [];
 
     const parsedCenterId = Number(center_id);
