@@ -1,0 +1,109 @@
+================================================================================
+BÁO CÁO TỔNG KẾT THU THẬP ẢNH MINH CHỨNG THỰC TẾ (BT2 - SMART CRM LUỒNG L5)
+================================================================================
+
+1. THÔNG TIN THỰC HIỆN
+--------------------------------------------------------------------------------
+- Dự án: Smart CRM - Mekong Mobile (Track SE)
+- Phân hệ: Luồng L5 - Kho linh kiện thay thế (Part Inventory Management)
+- Sinh viên thực hiện: Nguyễn Văn Chí (MSSV: 2374802010056)
+- Thời điểm thực hiện: 19/10/2026, 21:15:00 (GMT+7)
+- Đường dẫn thư mục minh chứng: D:\DoAn\smartcrm-2374802010056-part-inventory\evidence\BT2_screenshots\
+
+2. THÔNG TIN PHIÊN BẢN VÀ GIT
+--------------------------------------------------------------------------------
+- Branch hiện tại: dev
+- Trạng thái working tree: sạch sẽ (clean working tree)
+- Commit bám sát: 76e3fd4 / 358482e (feat: hoàn thành module cốt lõi L5, bộ test và giao diện React)
+- Git Tag: v0.2 (đã gắn và đồng bộ lên Remote GitHub origin)
+- Remote GitHub: https://github.com/chinguyen-mr/smartcrm-2374802010056-part-inventory.git
+
+3. CÁC LỆNH ĐÃ THỰC THI TRONG QUÁ TRÌNH THU THẬP
+--------------------------------------------------------------------------------
+1. npm run migrate (trong src/backend) -> Tái tạo sạch 6 bảng từ db/sql-ddl.sql.
+2. npm run seed (trong src/backend) -> Nạp hơn 17.000 dòng dữ liệu từ 5 file CSV mẫu.
+3. npm test (trong src/backend) -> Chạy 31 bài kiểm thử tự động (Unit & Integration).
+4. npm run build (trong src/frontend) -> Biên dịch production bundle bằng Vite.
+5. node server.js (trong src/backend) -> Khởi động Backend Express tại cổng 3000.
+6. npm run dev (trong src/frontend) -> Khởi động Frontend Vite tại cổng 5173.
+7. node scripts/capture_evidence.js -> Kịch bản chụp ảnh tự động qua Chrome DevTools Protocol.
+
+4. KẾT QUẢ KIỂM THỬ THỰC TẾ
+--------------------------------------------------------------------------------
+- Backend Test Suite: 31/31 PASS (100%), 0 FAIL, 0 SKIPPED (thời gian: 10.42s).
+  + Unit Tests (Mock Repo): 22/22 PASS (TC01 - TC22 đầy đủ luồng đúng, biên, sai, phân quyền).
+  + Integration Tests (DB thật): 9/9 PASS (xác thực token, tra cứu, nhập kho, xuất kho, cảnh báo).
+- Frontend Build: PASS hoàn toàn trong 128ms, sinh file index.html, index.css, index.js sạch.
+- Idempotency Seed: PASS chạy lại lần 2 nạp 0 bản ghi mới, 0 lỗi phát sinh.
+
+5. DANH SÁCH ẢNH ĐÃ TẠO (28/28 ẢNH - TOÀN BỘ CÓ DUNG LƯỢNG > 0)
+--------------------------------------------------------------------------------
+[Nhóm A: Cấu trúc mã nguồn & kiến trúc]
+  1. 01_repository_architecture/01_repository_tree.png                 (304.606 bytes)
+  2. 01_repository_architecture/02_architecture_mapping.png           (315.607 bytes)
+  3. 01_repository_architecture/03_service_repository_separation.png  (357.384 bytes)
+
+[Nhóm B: M1 - Tra cứu tồn kho & Cảnh báo]
+  4. 02_M1_stock_lookup/04_M1_stock_lookup.png                        (152.443 bytes)
+  5. 02_M1_stock_lookup/05_M1_search_filter.png                       (152.443 bytes)
+  6. 03_M1_low_stock_alert/06_M1_low_stock_alert.png                  (152.443 bytes)
+  7. 03_M1_low_stock_alert/07_M1_threshold_management.png             (152.443 bytes)
+
+[Nhóm C: M2 - Nhập kho]
+  8. 04_M2_receipt/08_M2_receipt_form.png                             (152.443 bytes)
+  9. 04_M2_receipt/09_M2_receipt_success.png                          (287.001 bytes)
+
+[Nhóm D: M3 - Xuất linh kiện cho phiếu bảo hành]
+  10. 05_M3_issue/10_M3_issue_form.png                                (287.001 bytes)
+  11. 05_M3_issue/11_M3_issue_success.png                             (287.018 bytes)
+  12. 05_M3_issue/12_M3_insufficient_stock.png                        (287.018 bytes)
+
+[Nhóm E: Kiểm thử backend]
+  13. 06_backend_tests/13_backend_test_summary.png                    (585.652 bytes)
+  14. 06_backend_tests/14_test_happy_path.png                         (211.763 bytes)
+  15. 06_backend_tests/15_test_boundary_case.png                      (290.847 bytes)
+  16. 06_backend_tests/16_test_invalid_input.png                      (200.355 bytes)
+  17. 06_backend_tests/17_test_cross_center_authorization.png         (232.228 bytes)
+
+[Nhóm F: Ba trạng thái giao diện bắt buộc]
+  18. 07_frontend_states/18_UI_loading.png                            (96.373 bytes)
+  19. 07_frontend_states/19_UI_empty.png                              (286.509 bytes)
+  20. 07_frontend_states/20_UI_error.png                              (285.961 bytes)
+  21. 07_frontend_states/21_UI_success.png                            (281.148 bytes)
+
+[Nhóm G: Khả năng dựng lại hệ thống (Reproducibility)]
+  22. 08_reproducibility/22_migration_success.png                     (152.169 bytes)
+  23. 08_reproducibility/23_seed_success.png                          (161.078 bytes)
+  24. 08_reproducibility/24_seed_rerun_idempotency.png                (165.055 bytes)
+  25. 08_reproducibility/25_frontend_build.png                        (114.258 bytes)
+
+[Nhóm H: Git và tài liệu]
+  26. 09_git_and_docs/26_git_status.png                               (100.161 bytes)
+  27. 09_git_and_docs/27_git_tag_v02.png                              (124.322 bytes)
+  28. 09_git_and_docs/28_required_docs.png                           (176.262 bytes)
+
+6. ẢNH CÒN THIẾU
+--------------------------------------------------------------------------------
+- Số lượng ảnh còn thiếu: 0 (Đã thu thập đầy đủ 28/28 ảnh theo yêu cầu đề bài).
+- Số ảnh NOT_AVAILABLE: 0.
+- Số ảnh NEEDS_FIX: 0.
+
+7. LỖI PHÁT HIỆN TRONG QUÁ TRÌNH CHẠY VÀ CÁCH XỬ LÝ
+--------------------------------------------------------------------------------
+- Lỗi 1: Ban đầu khi load trang, React component M1 render trước khi token JWT được
+  khởi tạo trong bộ nhớ, dẫn đến lỗi 401 Unauthorized khi gọi API lần đầu.
+  -> Đã khắc phục: Bổ sung cờ authReady trong App.jsx để trì hoãn việc mount các màn
+     hình cho tới khi phiên xác thực demo hoàn tất.
+- Lỗi 2: Input trong React là Controlled Input, khi dùng tool tự động gõ ký tự có thể
+  bị thiếu ký tự nếu không kích hoạt event 'input' và 'change'.
+  -> Đã khắc phục: Sử dụng nativeInputValueSetter và dispatchEvent chuẩn của DOM để
+     đồng bộ giá trị trực tiếp vào React State.
+
+8. NHỮNG VIỆC CẦN LÀM TRƯỚC KHI CHÈN ẢNH VÀO BÁO CÁO
+--------------------------------------------------------------------------------
+1. Kiểm tra lại kích thước và độ phân giải của các ảnh khi chèn vào tệp Word báo cáo
+   (đảm bảo chữ số, mã linh kiện và thông báo lỗi đọc được rõ ràng).
+2. Chèn từng ảnh vào đúng mục tương ứng trong báo cáo BT2 theo cấu trúc danh mục đã phân chia.
+3. Đính kèm chú thích dưới mỗi hình ảnh ghi rõ: Mã hình, Tên hình ảnh, Nội dung minh chứng
+   và quy tắc nghiệp vụ liên quan (ví dụ: QT-09, QT-13, QT-14).
+================================================================================

@@ -41,13 +41,14 @@ smartcrm-2374802010056-part-inventory/
 │       ├── part_transactions.csv # 4.954 giao dịch kho lịch sử (891 NHAP, 4.063 XUAT)
 │       └── tickets_history.csv   # 7.800 phiếu bảo hành tham chiếu
 ├── docs/
-│   ├── srs.md                    # Đặc tả yêu cầu phần mềm SRS luồng L5
+│   ├── srs.md                    # Đặc tả yêu cầu phần mềm SRS luồng L5 (từ BT1)
 │   ├── erd.md                    # Mô hình dữ liệu quan hệ ERD chi tiết
-│   ├── architecture.md           # Thiết kế kiến trúc 3 lớp
+│   ├── architecture.md           # Thiết kế kiến trúc 3 lớp đề xuất (từ BT1)
+│   ├── architecture-thuc-te.md   # Sơ đồ & mô tả kiến trúc ĐÃ HIỆN THỰC (BT2)
 │   ├── use-cases.md              # Đặc tả các Use Case cốt lõi
 │   ├── api-contract.md           # Hợp đồng API chi tiết
-│   ├── thay-doi-thiet-ke.md      # Nhật ký 5 quyết định thay đổi kỹ thuật
-│   ├── ai-disclosure.md          # Khai báo sử dụng AI & cách thức kiểm chứng
+│   ├── thay-doi-thiet-ke.md      # Nhật ký 5 quyết định thay đổi kỹ thuật (MỚI ở BT2 - bắt buộc)
+│   ├── ai-disclosure.md          # Khai báo sử dụng AI & cách thức kiểm chứng (cập nhật BT2)
 │   └── diagrams/                 # Các sơ đồ nguồn định dạng .drawio
 ├── src/
 │   ├── backend/

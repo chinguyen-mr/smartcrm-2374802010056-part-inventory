@@ -8,10 +8,11 @@ import AlertBanner from "./components/AlertBanner";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("M1");
-  const [role, setRole] = useState("KTV");
+  const [role, setRole] = useState("QUAN_LY_TRUNG_TAM");
   const [centerId, setCenterId] = useState(1);
   const [authError, setAuthError] = useState(null);
   const [authenticating, setAuthenticating] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
 
   // Khởi tạo phiên làm việc demo cho người chấm / người dùng
   const initAuth = async (currentRole, currentCenterId) => {
@@ -23,6 +24,7 @@ export default function App() {
         center_id: currentCenterId,
         username: currentRole === "KTV" ? `ktv_tt0${currentCenterId}` : `qltt_tt0${currentCenterId}`,
       });
+      setAuthReady(true);
     } catch (err) {
       setAuthError("Không thể kết nối Backend để cấp token xác thực: " + err.message);
     } finally {
@@ -78,10 +80,15 @@ export default function App() {
       {/* Nội dung màn hình chính */}
       <main className="main-content">
         {authError && <AlertBanner type="danger" message={authError} onClose={() => setAuthError(null)} />}
+        {authenticating && !authReady && (
+          <div style={{ textAlign: "center", padding: "3rem", color: "#64748b" }}>
+            Đang khởi tạo phiên làm việc với máy chủ...
+          </div>
+        )}
 
-        {activeTab === "M1" && <StockLookupScreen centerId={centerId} role={role} />}
-        {activeTab === "M2" && <StockReceiptScreen centerId={centerId} role={role} />}
-        {activeTab === "M3" && <StockIssueScreen centerId={centerId} role={role} />}
+        {authReady && activeTab === "M1" && <StockLookupScreen centerId={centerId} role={role} />}
+        {authReady && activeTab === "M2" && <StockReceiptScreen centerId={centerId} role={role} />}
+        {authReady && activeTab === "M3" && <StockIssueScreen centerId={centerId} role={role} />}
       </main>
     </div>
   );

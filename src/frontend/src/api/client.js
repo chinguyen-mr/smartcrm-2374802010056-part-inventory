@@ -42,6 +42,14 @@ async function request(endpoint, options = {}) {
     ...(options.headers || {}),
   };
 
+  // Nếu chưa có token, tự động đăng nhập demo (trừ endpoint đăng nhập)
+  if (!currentToken && !endpoint.startsWith('/api/auth')) {
+    // Gọi token demo mà không đính kèm Authorization
+    const demoRes = await loginDemo({});
+    if (demoRes && demoRes.token) {
+      setAuthToken(demoRes.token, demoRes.user);
+    }
+  }
   if (currentToken) {
     headers["Authorization"] = `Bearer ${currentToken}`;
   }
