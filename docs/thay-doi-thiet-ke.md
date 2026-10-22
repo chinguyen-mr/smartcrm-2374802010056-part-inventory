@@ -13,6 +13,9 @@ Tài liệu này ghi nhận toàn bộ các quyết định điều chỉnh kỹ
 | **3** | Khóa ngoại vòng giữa `ticket_part.transaction_id` và `part_transaction.ticket_part_id`. | **Giữ thiết kế DDL**, xử lý trong Seed & Service | Thiết kế BT1 định nghĩa quan hệ 1-1 giữa liên kết phiếu-linh kiện và giao dịch xuất. Nếu nạp đồng thời sẽ vi phạm ràng buộc Foreign Key. | Quy trình ghi dữ liệu: (1) Chèn `ticket_part` với `transaction_id = NULL`; (2) Chèn `part_transaction`; (3) Cập nhật `ticket_part.transaction_id`. | **ĐÃ KIỂM CHỨNG**: Nạp 4.063 giao dịch xuất lịch sử thành công 100%, 0 vi phạm FK. |
 | **4** | Tách 3 màn hình giao diện (Wireframe vs Báo cáo). | **Chốt theo chỉ đạo** | Báo cáo và wireframe cũ có sự khác biệt giữa gộp hay tách form nhập/xuất. Quyết định chốt: M1 (Tra cứu tồn kho & cảnh báo), M2 (Nhập kho), M3 (Xuất kho cho phiếu bảo hành). | Frontend React xây dựng 3 màn hình riêng biệt, độc lập, gọi API qua client layer. | **ĐÃ KIỂM CHỨNG**: Đã hiện thực 3 màn hình `StockLookupScreen` (M1), `StockReceiptScreen` (M2), `StockIssueScreen` (M3) trong React 19 + Vite, gọi API thật qua `client.js`, build thành công. |
 | **5** | Đề xuất allowlist trạng thái phiếu cho phép xuất kho. | **Đề xuất kỹ thuật (Prototype)** | Cần tiêu chí rõ ràng để `TicketAdapter` từ chối các phiếu không hợp lệ. Đề xuất: `DA_PHAN_CONG`, `DANG_XU_LY`, `CHO_LINH_KIEN`. | Giao dịch xuất kiểm tra điều kiện này; các phiếu `MOI`, `HOAN_TAT`, `DA_DONG`, `DA_HUY` bị từ chối `409 TICKET_STATUS_NOT_ELIGIBLE`. Lưu ý 4.063 phiếu lịch sử trong CSV có trạng thái `DA_DONG` vì là dữ liệu snapshot quá khứ. | **ĐÃ KIỂM CHỨNG**: Đã tạo các phiếu mẫu (active & invalid) trong seed script. |
+| **6** | Số lượng User Story trong bản nháp cũ có 8 story (US1–US8), vượt ngưỡng 5–7 story theo quy định của đề bài BT1 (Mục 2.1). | **Sửa** (Chốt 7 User Story cốt lõi cho bản nộp BT1; đưa US8 vào Ngoài phạm vi) | Đề bài BT1 quy định rõ: "≥ 4 FR và 5–7 User Story". US8 (Xem danh sách phiếu chờ linh kiện) có mức ưu tiên COULD và phụ thuộc vào hệ thống phiếu ngoài. Giữ US1–US7 là 7 story cốt lõi bao quát đủ luồng L5, không vi phạm giới hạn story của rubric. | Chuyển US8, FR12, UC9 thành nhóm "Ngoài phạm vi hiện thực chính của BT1 / Đề xuất tương lai". Bảng truy vết FR–US–UC–MoSCoW giữ 11 FR ứng với 7 US, 0 ô trống. | **ĐÃ KIỂM CHỨNG**: Đồng bộ trong `docs/srs.md`, `docs/use-cases.md`, `docs/api-contract.md`. |
+| **7** | Số liệu dataset ở Phiếu phạm vi Buổi 2 ghi số ước tính (1.080 part_stock, ~9.400 part_transaction) thay vì số liệu thực tế của bộ dataset chính thức. | **Sửa** (Chuẩn hóa số liệu thực tế và phân biệt rõ số liệu seed prototype) | Nguyên tắc CĐTN1 yêu cầu: "Truy vết được – Tái lập được – Kiểm chứng được". Bộ dataset gốc có 717 dòng `part_stock`, 4.954 dòng `part_transactions`, 180 `parts`, 6 `service_centers`, 7.800 `tickets_history`. Con số 1.080 là tổ hợp lý thuyết ($6 \times 180$); 363 tổ hợp chưa có dòng tồn được hệ thống xử lý mặc định = 0 (G5). | Cập nhật số liệu chuẩn xác trong tài liệu; seed nạp đúng 100% dữ liệu gốc không tự bịa đặt, không làm tròn số. | **ĐÃ KIỂM CHỨNG**: Đối chiếu 100% số dòng giữa `data/sample/*.csv` và dataset gốc `CDTN1_Mekong Mobile_Dataset Smart CRM`. |
+| **8** | Sơ đồ kiến trúc mức khái niệm trong BT1 (`architecture.drawio`) chưa thể hiện đầy đủ các thành phần hiện thực của BT2 (thiếu API client, express routes, middleware xác thực/phân quyền). | **Bổ sung** tài liệu kiến trúc hiện thực (`docs/architecture-thuc-te.md`) | Kiến trúc BT1 là sơ đồ phân tầng logic tổng quát. Khi hiện thực BT2 theo Track SE, cần làm rõ luồng phụ thuộc 1 chiều: `UI -> API Client -> Routes -> Middleware -> Services -> Repositories -> PostgreSQL`, đảm bảo Service độc lập HTTP. | Giữ nguyên sơ đồ BT1 làm mốc thiết kế; lập tài liệu `docs/architecture-thuc-te.md` phân tích chi tiết ánh xạ đề xuất → hiện thực. | **ĐÃ KIỂM CHỨNG**: Mã nguồn backend/frontend phân tách đúng 3 lớp, Service không nhận `req/res`, 31/31 test pass. |
 
 ---
 
@@ -25,3 +28,33 @@ Tài liệu này ghi nhận toàn bộ các quyết định điều chỉnh kỹ
 ### 2. Tính Idempotent của Migration và Seed
 - Script `npm run migrate` thực hiện dọn dẹp và tái tạo cấu trúc DDL sạch từ `db/sql-ddl.sql`.
 - Script `npm run seed` sử dụng mệnh đề `ON CONFLICT DO NOTHING`, cho phép người chấm hoặc lập trình viên chạy lại nhiều lần mà không gặp lỗi và không làm nhân đôi số lượng bản ghi (đáp ứng tiêu chí cốt lõi C5).
+
+### 3. Chuẩn hóa 7 User Story và Bảng truy vết BT1
+- Đề bài BT1 Mục 2.1 quy định: 5–7 User Story chuẩn INVEST và Bảng truy vết FR ↔ US ↔ UC ↔ MoSCoW không có ô trống.
+- 7 User Story cốt lõi của L5 gồm:
+  1. US1 (KTV tra cứu tồn kho theo trung tâm - MUST)
+  2. US2 (KTV ghi nhận xuất kho cho phiếu bảo hành - MUST)
+  3. US3 (QLTT ghi nhận nhập kho linh kiện - MUST)
+  4. US4 (QLTT xem danh sách cảnh báo tồn dưới ngưỡng - SHOULD)
+  5. US5 (QLTT thiết lập ngưỡng cảnh báo - SHOULD)
+  6. US6 (QLTT xem lịch sử nhập/xuất kho - SHOULD)
+  7. US7 (KTV xem danh sách linh kiện đã xuất theo phiếu - SHOULD)
+- US8 (Xem danh sách phiếu chờ linh kiện - COULD) được phân loại là chức năng mở rộng tương lai, phụ thuộc vào phân hệ bảo hành ngoài, không đưa vào phạm vi nộp BT1.
+
+### 4. Đối chiếu số liệu Dataset chính thức và Xử lý tồn kho rỗng (G5)
+- Dữ liệu nguồn chính thức từ Mekong Mobile Dataset:
+  - `service_centers.csv`: 6 dòng
+  - `parts.csv`: 180 dòng
+  - `part_stock.csv`: 717 dòng (133 dòng dưới ngưỡng `quantity < min_threshold`, 17 dòng bằng ngưỡng `quantity == min_threshold`, 567 dòng trên ngưỡng `quantity > min_threshold`)
+  - `part_transactions.csv`: 4.954 dòng (891 NHAP, 4.063 XUAT)
+  - `tickets_history.csv`: 7.800 dòng (toàn bộ 4.063 mã phiếu xuất đều tìm thấy trong tệp này)
+- Xử lý 363 cặp trung tâm/linh kiện chưa có trong `part_stock.csv`:
+  - Khi tra cứu: Hệ thống tự động hiển thị số lượng tồn = 0 (G5) thông qua mệnh đề `COALESCE(ps.quantity, 0)`.
+  - Khi nhập kho lần đầu: Hệ thống sử dụng câu lệnh `INSERT ... ON CONFLICT DO UPDATE` để tự động khởi tạo dòng tồn kho và cập nhật số dư nguyên tử trong cùng một transaction.
+
+### 5. Tiến hóa kiến trúc phân lớp và tính độc lập HTTP của Service
+- Tách bạch 3 lớp rõ ràng theo tiêu chí C2 và S2:
+  - **Routes / Controllers:** Tiếp nhận HTTP request, giải nén tham số, gọi validator, chuyển giao xử lý cho Service, định dạng HTTP response.
+  - **Services:** Chứa 100% logic nghiệp vụ (QT-09 kiểm tra tồn/ngưỡng, QT-13 ghi sổ cái bất biến, QT-14 phân quyền trung tâm), hoàn toàn không chứa `req`, `res`, không tự trả mã HTTP status.
+  - **Repositories:** Trừu tượng hóa việc truy vấn CSDL PostgreSQL, thực hiện các câu lệnh SQL an toàn (Parameterized Query), khóa dòng `SELECT ... FOR UPDATE` khi xuất kho chống race condition (NFR3).
+- Toàn bộ request từ Frontend SPA (React 19) đều thông qua lớp `api/client.js` tập trung, tự động gắn Header `Authorization: Bearer <JWT>`, xử lý chuẩn hóa 3 trạng thái Loading, Empty và Error (có nút Thử lại).

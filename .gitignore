@@ -1,6 +1,8 @@
-# Secrets
+# Secrets & temp
 .env
 .ua/
+.playwright-mcp/
+TaiLieu/
 
 # Dependencies & build
 node_modules/

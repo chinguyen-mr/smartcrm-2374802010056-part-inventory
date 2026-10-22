@@ -96,7 +96,7 @@ export default function StockLookupScreen({ centerId, role }) {
           </div>
         </div>
 
-        {error && <AlertBanner type="danger" message={error} onClose={() => setError(null)} />}
+        {error && <AlertBanner type="danger" message={error} onRetry={fetchStockData} onClose={() => setError(null)} />}
         {successMsg && <AlertBanner type="success" message={successMsg} onClose={() => setSuccessMsg(null)} />}
 
         {/* Thanh tìm kiếm */}

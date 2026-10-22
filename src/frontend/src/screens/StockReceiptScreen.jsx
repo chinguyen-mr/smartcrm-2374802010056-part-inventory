@@ -98,7 +98,18 @@ export default function StockReceiptScreen({ centerId, role }) {
           />
         )}
 
-        {error && <AlertBanner type="danger" message={error} onClose={() => setError(null)} />}
+        {error && (
+          <AlertBanner
+            type="danger"
+            message={error}
+            onRetry={() => {
+              setError(null);
+              loadPartsList();
+              loadRecentReceipts();
+            }}
+            onClose={() => setError(null)}
+          />
+        )}
 
         {successData && (
           <AlertBanner

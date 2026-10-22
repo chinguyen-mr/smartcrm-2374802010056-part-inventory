@@ -115,7 +115,17 @@ export default function StockIssueScreen({ centerId, role }) {
           </div>
         </div>
 
-        {error && <AlertBanner type="danger" message={error} onClose={() => setError(null)} />}
+        {error && (
+          <AlertBanner
+            type="danger"
+            message={error}
+            onRetry={() => {
+              setError(null);
+              loadPartsList();
+            }}
+            onClose={() => setError(null)}
+          />
+        )}
 
         {successData && (
           <AlertBanner
