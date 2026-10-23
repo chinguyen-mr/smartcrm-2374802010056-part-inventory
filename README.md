@@ -128,6 +128,10 @@ CREATE DATABASE smart_crm;
 ```
 Chạy script migration để tạo tự động toàn bộ 6 bảng, khóa chính, khóa ngoại, chỉ mục (Index) và ràng buộc toàn vẹn từ database trống:
 ```powershell
+# Chạy từ thư mục gốc:
+npm run migrate
+
+# Hoặc chạy từ src/backend:
 cd src/backend
 npm run migrate
 ```
@@ -136,6 +140,11 @@ npm run migrate
 ### 4.5. Nạp dữ liệu mẫu (Seed Data)
 Nạp dữ liệu thực tế từ bộ dữ liệu Case Study Mekong Mobile:
 ```powershell
+# Chạy từ thư mục gốc:
+npm run seed
+
+# Hoặc chạy từ src/backend:
+cd src/backend
 npm run seed
 ```
 *Kết quả:* Nạp thành công:
@@ -152,8 +161,13 @@ npm run seed
 
 ## 5. Chạy bộ kiểm thử (Tiêu chí cốt lõi C4)
 
-Tại thư mục `src/backend`, thực thi một lệnh duy nhất:
+Thực thi một lệnh duy nhất:
 ```powershell
+# Chạy từ thư mục gốc:
+npm test
+
+# Hoặc chạy từ src/backend:
+cd src/backend
 npm test
 ```
 *Kết quả:* Chạy **31/31 bài test PASS 100%**, bao gồm:
@@ -228,25 +242,33 @@ Trên thanh điều hướng đầu trang có sẵn công cụ chuyển đổi *
 
 ---
 
-## 10. Trạng thái module Buổi 8 (Workshop Sprint 1)
+## 10. Trạng thái hiện tại của module (Buổi 8, 9, 10)
 
-Theo yêu cầu chuẩn của Buổi 8 – Workshop xây dựng module cốt lõi, hiện trạng triển khai của module L5 được xác nhận như sau:
+Theo yêu cầu chuẩn của Buổi 8, 9 và 10, hiện trạng triển khai của module L5 được nghiệm thu như sau:
 
-- **Phần đã hoàn thành:**
-  - ✅ **Xử lý phản hồi BT1:** Đã ghi nhận 8 quyết định kỹ thuật chuẩn hóa tại [`docs/thay-doi-thiet-ke.md`](docs/thay-doi-thiet-ke.md) (từ `TD-01` đến `TD-08`).
-  - ✅ **Cấu trúc mã nguồn 3 lớp:** Ánh xạ 100% sơ đồ kiến trúc (`routes` $\rightarrow$ `services` $\rightarrow$ `repositories`), đảm bảo Service độc lập hoàn toàn khỏi đối tượng HTTP (`req`/`res`).
-  - ✅ **Entity CRUD cốt lõi đầu tiên:** Hoàn thành 2 thực thể CRUD đầy đủ qua 3 lớp:
-    1. Thực thể `part` (Danh mục linh kiện): Tạo mới, tra cứu tìm kiếm, xem chi tiết, cập nhật thông tin và xóa.
-    2. Thực thể `part_stock` (Số dư tồn kho linh kiện theo trung tâm): Khởi tạo tồn, đọc số dư kết hợp danh mục, cập nhật số lượng nhập/xuất, cấu hình ngưỡng tối thiểu.
-  - ✅ **Bảo toàn quy tắc nghiệp vụ L5:**
-    - `QT-09`: Không xuất vượt tồn (`INSUFFICIENT_STOCK`); chỉ cảnh báo khi `quantity < min_threshold` và `min_threshold > 0`; bằng ngưỡng không cảnh báo.
-    - `QT-13`: Sổ cái giao dịch bất biến (`part_transaction`), không hỗ trợ UPDATE/DELETE vật lý.
-    - `QT-14`: Kiểm soát phân quyền trung tâm tại tầng Service, từ chối `403 FORBIDDEN` khi người dùng thao tác ngoài trung tâm được cấp.
-  - ✅ **Kiểm thử tự động:** 31/31 bài test PASS (22 Unit Tests + 9 Integration Tests) chạy bằng 1 lệnh `npm test`.
-  - ✅ **Tính Idempotent của CSDL:** Migration dựng sạch từ CSDL trống; Seed nạp dữ liệu thật từ CSV, chạy lần thứ hai không phát sinh lỗi và không nhân đôi dữ liệu.
-  - ✅ **Giao diện kết nối API:** 3 màn hình React 19 (M1, M2, M3) gọi API thật qua `client.js`, có đủ 3 trạng thái: Đang tải (Loading), Rỗng (Empty), và Lỗi có nút Thử lại (Error with Retry).
+- [x] **Xử lý phản hồi BT1:** Đã ghi nhận 9 quyết định kỹ thuật chuẩn hóa tại [`docs/thay-doi-thiet-ke.md`](docs/thay-doi-thiet-ke.md) (từ `TD-01` đến `TD-09`).
+- [x] **Migration CSDL sạch:** Dựng tự động 6 bảng PostgreSQL (`service_center`, `part`, `part_stock`, `ticket_ref`, `ticket_part`, `part_transaction`) từ CSDL trống.
+- [x] **Seed dữ liệu mẫu an toàn (Idempotent):** Nạp 100% dữ liệu gốc Mekong Mobile (6 TT, 180 linh kiện, 717 tồn kho, 7.805 phiếu, 4.954 giao dịch). Chạy lại ghi nhận `0 bản ghi mới`.
+- [x] **CRUD 3 lớp độc lập:** Thực thể `part` và `part_stock` đầy đủ thao tác qua `routes` $\rightarrow$ `services` $\rightarrow$ `repositories`. Service không phụ thuộc `req`/`res`.
+- [x] **Bảo toàn quy tắc nghiệp vụ L5:**
+  - [x] `QT-09`: Khóa dòng `SELECT ... FOR UPDATE`, chặn xuất vượt tồn, cảnh báo đúng điều kiện `quantity < min_threshold && min_threshold > 0` (bằng ngưỡng không cảnh báo).
+  - [x] `QT-13`: Sổ cái giao dịch bất biến (`part_transaction`), không có endpoint/câu lệnh sửa hoặc xóa vật lý.
+  - [x] `QT-14`: Kiểm soát phân quyền trung tâm tại tầng Service (`user.centerId === centerId`), từ chối 403 khi truy cập chéo trung tâm.
+- [x] **Hợp đồng dữ liệu & chuẩn hóa lỗi (Buổi 9):** Cấu trúc phản hồi lỗi `{ error, message, fields, details }`, tự động map mảng validation thành `fields: { [field]: reason }` phục vụ form giao diện.
+- [x] **Ba màn hình React gọi API thật (Buổi 10):**
+  - [x] M1 (`StockLookupScreen`): Tra cứu tồn kho, tìm kiếm, lọc cảnh báo thiếu hụt, cấu hình ngưỡng tối thiểu.
+  - [x] M2 (`StockReceiptScreen`): Ghi nhận nhập kho, cập nhật số dư tức thời và xem lịch sử nhập gần nhất.
+  - [x] M3 (`StockIssueScreen`): Xuất kho theo phiếu bảo hành, tra cứu danh sách linh kiện đã xuất theo mã phiếu.
+  - [x] 100% request qua lớp `api/client.js`, 0% gọi `fetch()` trực tiếp từ components/pages.
+- [x] **Ba trạng thái giao diện bắt buộc & Vòng đời xác thực:**
+  - [x] Loading (spinner đang tải dữ liệu).
+  - [x] Empty (phân biệt rỗng do chưa có dữ liệu và rỗng do bộ lọc tìm kiếm).
+  - [x] Error (thông báo lỗi thân thiện kèm nút "🔄 Thử lại").
+  - [x] Mã 401 Unauthorized (xóa token, chuyển trạng thái kèm nút "🔄 Đăng nhập lại").
+  - [x] Mã 403 Forbidden (thông báo không đủ quyền, không làm mất phiên làm việc).
+- [x] **Kiểm thử tự động:** 31/31 bài test PASS 100% (22 Unit Tests + 9 Integration Tests với PostgreSQL thật) chạy bằng 1 lệnh `npm test`.
 
-- **Hạn chế đã biết & Kế hoạch giai đoạn tiếp theo:**
-  - Bảng `ticket_ref` đóng vai trò là bảng tham chiếu mô phỏng dữ liệu phiếu bảo hành bên ngoài cho prototype.
-  - Chức năng COULD (US8: Xem danh sách phiếu chờ linh kiện) được bảo lưu cho các đợt phát triển tiếp theo sau khi phân hệ bảo hành hoàn tất API tích hợp.
+- **Phần mở rộng tương lai (ngoài phạm vi nộp BT1):**
+  - Chức năng COULD (US8: Xem danh sách phiếu chờ linh kiện) được bảo lưu cho các đợt phát triển tiếp theo sau khi hệ thống bảo hành hoàn tất API bên ngoài.
+
 
