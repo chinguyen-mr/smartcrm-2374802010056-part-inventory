@@ -30,3 +30,6 @@ models/*.pt
 postman/
 .DS_Store
 Thumbs.db
+
+# Reports (generated)
+docs/report/
