@@ -225,3 +225,28 @@ Trên thanh điều hướng đầu trang có sẵn công cụ chuyển đổi *
 - Dự án được phát triển với sự hỗ trợ của mô hình ngôn ngữ lớn (LLM) theo quy định của môn học.
 - Toàn bộ kiến trúc 3 lớp, mã nguồn backend, migration, seed, bộ kiểm thử 31 test cases và giao diện 3 màn hình React đã được sinh viên trực tiếp rà soát, kiểm thử thực tế và nghiệm thu từng bước.
 - Chi tiết xem tại [docs/ai-disclosure.md](docs/ai-disclosure.md) và [docs/thay-doi-thiet-ke.md](docs/thay-doi-thiet-ke.md).
+
+---
+
+## 10. Trạng thái module Buổi 8 (Workshop Sprint 1)
+
+Theo yêu cầu chuẩn của Buổi 8 – Workshop xây dựng module cốt lõi, hiện trạng triển khai của module L5 được xác nhận như sau:
+
+- **Phần đã hoàn thành:**
+  - ✅ **Xử lý phản hồi BT1:** Đã ghi nhận 8 quyết định kỹ thuật chuẩn hóa tại [`docs/thay-doi-thiet-ke.md`](docs/thay-doi-thiet-ke.md) (từ `TD-01` đến `TD-08`).
+  - ✅ **Cấu trúc mã nguồn 3 lớp:** Ánh xạ 100% sơ đồ kiến trúc (`routes` $\rightarrow$ `services` $\rightarrow$ `repositories`), đảm bảo Service độc lập hoàn toàn khỏi đối tượng HTTP (`req`/`res`).
+  - ✅ **Entity CRUD cốt lõi đầu tiên:** Hoàn thành 2 thực thể CRUD đầy đủ qua 3 lớp:
+    1. Thực thể `part` (Danh mục linh kiện): Tạo mới, tra cứu tìm kiếm, xem chi tiết, cập nhật thông tin và xóa.
+    2. Thực thể `part_stock` (Số dư tồn kho linh kiện theo trung tâm): Khởi tạo tồn, đọc số dư kết hợp danh mục, cập nhật số lượng nhập/xuất, cấu hình ngưỡng tối thiểu.
+  - ✅ **Bảo toàn quy tắc nghiệp vụ L5:**
+    - `QT-09`: Không xuất vượt tồn (`INSUFFICIENT_STOCK`); chỉ cảnh báo khi `quantity < min_threshold` và `min_threshold > 0`; bằng ngưỡng không cảnh báo.
+    - `QT-13`: Sổ cái giao dịch bất biến (`part_transaction`), không hỗ trợ UPDATE/DELETE vật lý.
+    - `QT-14`: Kiểm soát phân quyền trung tâm tại tầng Service, từ chối `403 FORBIDDEN` khi người dùng thao tác ngoài trung tâm được cấp.
+  - ✅ **Kiểm thử tự động:** 31/31 bài test PASS (22 Unit Tests + 9 Integration Tests) chạy bằng 1 lệnh `npm test`.
+  - ✅ **Tính Idempotent của CSDL:** Migration dựng sạch từ CSDL trống; Seed nạp dữ liệu thật từ CSV, chạy lần thứ hai không phát sinh lỗi và không nhân đôi dữ liệu.
+  - ✅ **Giao diện kết nối API:** 3 màn hình React 19 (M1, M2, M3) gọi API thật qua `client.js`, có đủ 3 trạng thái: Đang tải (Loading), Rỗng (Empty), và Lỗi có nút Thử lại (Error with Retry).
+
+- **Hạn chế đã biết & Kế hoạch giai đoạn tiếp theo:**
+  - Bảng `ticket_ref` đóng vai trò là bảng tham chiếu mô phỏng dữ liệu phiếu bảo hành bên ngoài cho prototype.
+  - Chức năng COULD (US8: Xem danh sách phiếu chờ linh kiện) được bảo lưu cho các đợt phát triển tiếp theo sau khi phân hệ bảo hành hoàn tất API tích hợp.
+
