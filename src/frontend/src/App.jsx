@@ -34,6 +34,17 @@ export default function App() {
 
   useEffect(() => {
     initAuth(role, centerId);
+
+    const handleAuthExpired = (e) => {
+      setAuthReady(false);
+      setAuthError(
+        (e.detail && e.detail.message) ||
+          "Phiên làm việc đã hết hạn (401 Unauthorized). Đã xóa token xác thực. Vui lòng đăng nhập lại."
+      );
+    };
+
+    window.addEventListener("auth:expired", handleAuthExpired);
+    return () => window.removeEventListener("auth:expired", handleAuthExpired);
   }, []);
 
   const handleRoleOrCenterChange = (newRole, newCenterId) => {
@@ -79,7 +90,21 @@ export default function App() {
 
       {/* Nội dung màn hình chính */}
       <main className="main-content">
-        {authError && <AlertBanner type="danger" message={authError} onClose={() => setAuthError(null)} />}
+        {authError && (
+          <div style={{ marginBottom: "1.5rem" }}>
+            <AlertBanner type="danger" message={authError} onClose={() => setAuthError(null)} />
+            {!authReady && (
+              <div style={{ textAlign: "center", marginTop: "1rem" }}>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => initAuth(role, centerId)}
+                >
+                  🔄 Đăng nhập lại
+                </button>
+              </div>
+            )}
+          </div>
+        )}
         {authenticating && !authReady && (
           <div style={{ textAlign: "center", padding: "3rem", color: "#64748b" }}>
             Đang khởi tạo phiên làm việc với máy chủ...

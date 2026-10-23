@@ -74,14 +74,30 @@ async function request(endpoint, options = {}) {
   }
 
   if (!response.ok) {
+    // Xử lý 401: Xóa token và kích hoạt thông báo phiên làm việc hết hạn
+    if (response.status === 401 && !endpoint.startsWith("/api/auth")) {
+      setAuthToken("", null);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("auth:expired", {
+            detail: { message: "Phiên làm việc đã hết hạn. Đã xóa token xác thực." },
+          })
+        );
+      }
+    }
+
     const errorMsg =
       (data && data.message) ||
       (data && data.error) ||
-      `Yêu cầu thất bại với mã lỗi HTTP ${response.status}`;
+      (response.status === 403
+        ? "Bạn không đủ quyền thực hiện thao tác này (403 Forbidden)."
+        : `Yêu cầu thất bại với mã lỗi HTTP ${response.status}`);
+
     const err = new Error(errorMsg);
     err.status = response.status;
-    err.code = (data && data.error) || "HTTP_ERROR";
+    err.code = (data && data.error) || (response.status === 403 ? "FORBIDDEN" : "HTTP_ERROR");
     err.details = (data && data.details) || null;
+    err.fields = (data && data.fields) || {};
     throw err;
   }
 
