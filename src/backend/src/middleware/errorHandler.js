@@ -6,9 +6,21 @@ const AppError = require("../errors/AppError");
  */
 function errorHandler(err, req, res, next) {
   if (err instanceof AppError) {
+    let fields = {};
+    if (Array.isArray(err.details)) {
+      for (const item of err.details) {
+        if (item && item.field) {
+          fields[item.field] = item.reason || item.message || "Không hợp lệ";
+        }
+      }
+    } else if (err.details && typeof err.details === "object") {
+      fields = err.details;
+    }
+
     return res.status(err.statusCode).json({
       error: err.errorCode,
       message: err.message,
+      fields,
       details: err.details || undefined,
     });
   }
