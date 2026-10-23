@@ -7,6 +7,7 @@
     "test": "npm --prefix src/backend test",
     "migrate": "npm --prefix src/backend run migrate",
     "seed": "npm --prefix src/backend run seed",
+    "build": "npm --prefix src/frontend run build",
     "dev:backend": "npm --prefix src/backend start",
     "dev:frontend": "npm --prefix src/frontend run dev"
   },
