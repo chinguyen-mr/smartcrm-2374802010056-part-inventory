@@ -31,11 +31,12 @@ Module **L5 – Kho linh kiện thay thế** là phân hệ quản lý biến đ
 
 ```text
 smartcrm-2374802010056-part-inventory/
-├── db/
-│   └── sql-ddl.sql               # DDL CSDL PostgreSQL chính thức
+├── sql/
+│   └── sql-ddl.sql               # DDL CSDL PostgreSQL chính thức (7 bảng)
 ├── data/
 │   └── sample/                   # Bộ dữ liệu mẫu chuẩn L5 từ Case Study Mekong Mobile
 │       ├── service_centers.csv   # Danh mục 6 trung tâm bảo hành
+│       ├── technicians.csv       # Danh mục 38 nhân viên/kỹ thuật viên (employee)
 │       ├── parts.csv             # Danh mục 180 linh kiện thay thế
 │       ├── part_stock.csv        # 717 cặp số dư tồn kho theo trung tâm
 │       ├── part_transactions.csv # 4.954 giao dịch kho lịch sử (891 NHAP, 4.063 XUAT)
@@ -126,7 +127,7 @@ Tạo cơ sở dữ liệu `smart_crm` trong PostgreSQL nếu chưa có:
 ```sql
 CREATE DATABASE smart_crm;
 ```
-Chạy script migration để tạo tự động toàn bộ 6 bảng, khóa chính, khóa ngoại, chỉ mục (Index) và ràng buộc toàn vẹn từ database trống:
+Chạy script migration để tạo tự động toàn bộ 7 bảng, khóa chính, khóa ngoại, chỉ mục (Index) và ràng buộc toàn vẹn từ database trống:
 ```powershell
 # Chạy từ thư mục gốc:
 npm run migrate
@@ -135,7 +136,7 @@ npm run migrate
 cd src/backend
 npm run migrate
 ```
-*Kết quả:* Tạo sạch sẽ 6 bảng: `service_center`, `part`, `part_stock`, `ticket_ref`, `ticket_part`, `part_transaction`.
+*Kết quả:* Tạo sạch sẽ 7 bảng: `service_center`, `employee`, `part`, `part_stock`, `ticket_ref`, `ticket_part`, `part_transaction`.
 
 ### 4.5. Nạp dữ liệu mẫu (Seed Data)
 Nạp dữ liệu thực tế từ bộ dữ liệu Case Study Mekong Mobile:
@@ -149,6 +150,7 @@ npm run seed
 ```
 *Kết quả:* Nạp thành công:
 - **6/6** trung tâm bảo hành (`service_center`).
+- **38/38** nhân viên/kỹ thuật viên (`employee`).
 - **180/180** danh mục linh kiện thay thế (`part`).
 - **717/717** dòng số dư tồn kho theo trung tâm (`part_stock`).
 - **7.805** phiếu bảo hành tham chiếu (`ticket_ref`), bao gồm các phiếu mẫu active/invalid phục vụ kiểm thử.

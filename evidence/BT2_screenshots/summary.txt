@@ -20,8 +20,8 @@ BÁO CÁO TỔNG KẾT THU THẬP ẢNH MINH CHỨNG THỰC TẾ (BT2 - SMART CR
 
 3. CÁC LỆNH ĐÃ THỰC THI TRONG QUÁ TRÌNH THU THẬP
 --------------------------------------------------------------------------------
-1. npm run migrate (trong src/backend) -> Tái tạo sạch 6 bảng từ db/sql-ddl.sql.
-2. npm run seed (trong src/backend) -> Nạp hơn 17.000 dòng dữ liệu từ 5 file CSV mẫu.
+1. npm run migrate (trong src/backend) -> Tái tạo sạch 7 bảng từ sql/sql-ddl.sql.
+2. npm run seed (trong src/backend) -> Nạp hơn 17.000 dòng dữ liệu từ 6 file CSV mẫu (bao gồm technicians.csv).
 3. npm test (trong src/backend) -> Chạy 31 bài kiểm thử tự động (Unit & Integration).
 4. npm run build (trong src/frontend) -> Biên dịch production bundle bằng Vite.
 5. node server.js (trong src/backend) -> Khởi động Backend Express tại cổng 3000.

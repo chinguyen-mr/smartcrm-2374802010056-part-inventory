@@ -2,7 +2,7 @@
 
 ## 1. Mục đích và phạm vi
 
-Luồng L5 quản lý tồn kho linh kiện thay thế tại các trung tâm bảo hành. Tài liệu này xác định yêu cầu nghiệp vụ, vai trò, tiêu chí chấp nhận và các mục tiêu chất lượng làm căn cứ cho Use Case, API contract, kiến trúc và mô hình dữ liệu. Đây là phiên bản chính thức cho BT2; schema đã được chốt tại `db/sql-ddl.sql`.
+Luồng L5 quản lý tồn kho linh kiện thay thế tại các trung tâm bảo hành. Tài liệu này xác định yêu cầu nghiệp vụ, vai trò, tiêu chí chấp nhận và các mục tiêu chất lượng làm căn cứ cho Use Case, API contract, kiến trúc và mô hình dữ liệu. Đây là phiên bản chính thức cho BT2; schema đã được chốt tại [`sql/sql-ddl.sql`](../sql/sql-ddl.sql).
 
 **Trong phạm vi:** tra cứu linh kiện/tồn theo trung tâm; nhập kho; xuất linh kiện gắn với phiếu bảo hành; cảnh báo tồn dưới ngưỡng; cấu hình ngưỡng; xem lịch sử giao dịch và xem linh kiện đã xuất theo phiếu.
 
@@ -12,15 +12,16 @@ Luồng L5 quản lý tồn kho linh kiện thay thế tại các trung tâm b�
 
 | Tác nhân/thuật ngữ | Ý nghĩa trong L5 |
 |---|---|
-| KTV | Tra cứu tồn, xuất linh kiện cho phiếu hợp lệ và xem linh kiện đã xuất cho phiếu; chỉ thao tác trong phạm vi trung tâm được cấp. |
-| QLTT | Tra cứu tồn, nhập kho, xem cảnh báo, thiết lập ngưỡng và xem lịch sử tại trung tâm được cấp. |
+| KTV | Kỹ thuật viên (thuộc `employee`): Tra cứu tồn, xuất linh kiện cho phiếu hợp lệ và xem linh kiện đã xuất cho phiếu; chỉ thao tác trong phạm vi trung tâm được cấp. |
+| QLTT | Quản lý trung tâm (thuộc `employee`): Tra cứu tồn, nhập kho, xem cảnh báo, thiết lập ngưỡng và xem lịch sử tại trung tâm được cấp. |
 | Hệ thống phiếu bảo hành | Hệ thống bên ngoài cung cấp thông tin để xác nhận phiếu, trung tâm và trạng thái trước khi xuất. L5 không tạo hoặc đổi trạng thái phiếu. |
+| `employee` | Danh mục 38 nhân sự kỹ thuật và quản lý trực thuộc các trung tâm bảo hành. |
 | `part` | Danh mục linh kiện thay thế. |
 | `part_stock` | Số lượng hiện tại của một linh kiện tại một trung tâm. |
 | `part_transaction` | Sổ ghi nhận bất biến các giao dịch `NHAP` và `XUAT`. |
 | `min_threshold` | Ngưỡng cảnh báo theo cặp trung tâm/linh kiện; cảnh báo khi tồn nhỏ hơn ngưỡng. |
 
-Schema chính thức gồm các bảng: `service_center`, `part`, `part_stock`, `ticket_ref`, `ticket_part`, `part_transaction`. Xem chi tiết tại `docs/erd.md` và `db/sql-ddl.sql`.
+Schema chính thức gồm 7 bảng: `service_center`, `employee`, `part`, `part_stock`, `ticket_ref`, `ticket_part`, `part_transaction`. Xem chi tiết tại [`docs/erd.md`](erd.md) và [`sql/sql-ddl.sql`](../sql/sql-ddl.sql).
 
 ## 3. User Story và mức ưu tiên
 

@@ -33,8 +33,8 @@
 | **19** | `19_UI_empty.png` | `07_frontend_states/` | Trạng thái giao diện khi không tìm thấy dữ liệu (Empty State) | React UI Component | `CAPTURED` | Minh họa hộp rỗng và thông báo hướng dẫn người dùng |
 | **20** | `20_UI_error.png` | `07_frontend_states/` | Trạng thái giao diện khi xảy ra lỗi kết nối hoặc bị từ chối quyền (Error State) | React UI Alert Banner | `CAPTURED` | Banner cảnh báo đỏ nêu rõ mã lỗi HTTP 403 Forbidden |
 | **21** | `21_UI_success.png` | `07_frontend_states/` | Trạng thái giao diện khi thao tác thành công (Success State) | React UI Alert Banner | `CAPTURED` | Banner thông báo xanh kèm thông tin số giao dịch |
-| **22** | `22_migration_success.png` | `08_reproducibility/` | Output thực tế khi chạy lệnh migration tạo cấu trúc 6 bảng | Lệnh `npm run migrate` | `CAPTURED` | DDL chính thức từ `db/sql-ddl.sql` thực thi hoàn tất |
-| **23** | `23_seed_success.png` | `08_reproducibility/` | Output thực tế khi chạy lệnh nạp dữ liệu mẫu ban đầu | Lệnh `npm run seed` | `CAPTURED` | Nạp hơn 17.000 dòng dữ liệu từ 5 file CSV |
+| **22** | `22_migration_success.png` | `08_reproducibility/` | Output thực tế khi chạy lệnh migration tạo cấu trúc 7 bảng | Lệnh `npm run migrate` | `CAPTURED` | DDL chính thức từ `sql/sql-ddl.sql` thực thi hoàn tất |
+| **23** | `23_seed_success.png` | `08_reproducibility/` | Output thực tế khi chạy lệnh nạp dữ liệu mẫu ban đầu | Lệnh `npm run seed` | `CAPTURED` | Nạp hơn 17.000 dòng dữ liệu từ 6 file CSV (kèm `technicians.csv`) |
 | **24** | `24_seed_rerun_idempotency.png` | `08_reproducibility/` | Output thực tế khi chạy lại lệnh seed lần thứ hai (Tính Idempotent) | Lệnh `npm run seed` (lần 2) | `CAPTURED` | Nạp 0 bản ghi mới, 0 lỗi, chứng minh an toàn tuyệt đối |
 | **25** | `25_frontend_build.png` | `08_reproducibility/` | Output thực tế khi build bundle production cho Frontend | Lệnh `npm run build` tại `src/frontend` | `CAPTURED` | Vite build hoàn thành trong 128ms, không có lỗi |
 | **26** | `26_git_status.png` | `09_git_and_docs/` | Trạng thái Git clean working tree trên nhánh `dev` | Lệnh `git status` & `git log` | `CAPTURED` | Working tree sạch sẽ, commit mới nhất hiển thị rõ |

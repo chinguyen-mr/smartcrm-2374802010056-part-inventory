@@ -9,7 +9,7 @@ Tài liệu này ghi nhận phạm vi và cách thức sử dụng công cụ AI
 | Công cụ | Phiên bản / Môi trường | Phạm vi sử dụng | Thành phần chịu ảnh hưởng | Cách con người kiểm chứng |
 |---|---|---|---|---|
 | **ChatGPT** | GPT-4o | Hỗ trợ cấu trúc tài liệu ban đầu, phác thảo Use Case, kiến trúc 3 lớp và mô hình dữ liệu từ tài liệu case study nguồn. | `docs/srs.md`, `docs/use-cases.md`, `docs/architecture.md`, `docs/api-contract.md` | Đối chiếu từng Use Case với tài liệu SRS và Case Study Mekong Mobile; rà soát chuẩn hóa mã truy vết US/UC/FR. |
-| **Antigravity IDE / Agent** | Claude 3.7 Sonnet / Gemini | Hỗ trợ phân tích mâu thuẫn giữa DDL, ERD và SRS; sinh mã khung (scaffolding) cho backend layered architecture, script migrate/seed dữ liệu lớn, bộ unit/integration test, và các màn hình React Vite (M1, M2, M3). | `src/backend/`, `db/sql-ddl.sql`, `src/frontend/`, `docs/thay-doi-thiet-ke.md`, `README.md` | - Chạy `npm run migrate` và `npm run seed` kiểm tra 100% bản ghi.<br>- Chạy `npm test` độc lập, xác nhận 31/31 test pass (22 unit + 9 integration).<br>- Chạy `npm run build` trên frontend, xác nhận 0 lỗi compile/bundle.<br>- Kiểm tra thủ công giao diện M1, M2, M3 kết nối backend API. |
+| **Antigravity IDE / Agent** | Claude 3.7 Sonnet / Gemini | Hỗ trợ phân tích mâu thuẫn giữa DDL, ERD và SRS; sinh mã khung (scaffolding) cho backend layered architecture, script migrate/seed dữ liệu lớn, bộ unit/integration test, và các màn hình React Vite (M1, M2, M3). | `src/backend/`, `sql/sql-ddl.sql`, `src/frontend/`, `docs/thay-doi-thiet-ke.md`, `README.md` | - Chạy `npm run migrate` và `npm run seed` kiểm tra 100% bản ghi.<br>- Chạy `npm test` độc lập, xác nhận 31/31 test pass (22 unit + 9 integration).<br>- Chạy `npm run build` trên frontend, xác nhận 0 lỗi compile/bundle.<br>- Kiểm tra thủ công giao diện M1, M2, M3 kết nối backend API. |
 
 ---
 
@@ -18,11 +18,11 @@ Tài liệu này ghi nhận phạm vi và cách thức sử dụng công cụ AI
 ### Giai đoạn 2 & 3: Kiến trúc Backend & DDL / Migration / Seed
 - **Hỗ trợ từ AI:**
   - Thiết kế cấu trúc thư mục 3 lớp (`src/config`, `src/errors`, `src/repositories`, `src/services`, `src/controllers`, `src/routes`, `src/middleware`).
-  - Viết script `migrate.js` thực thi `sql-ddl.sql` và `seed.js` nạp hơn 17.000 dòng dữ liệu từ 5 file CSV mẫu.
+  - Viết script `migrate.js` thực thi `sql/sql-ddl.sql` và `seed.js` nạp hơn 17.000 dòng dữ liệu từ 6 file CSV mẫu (bao gồm `technicians.csv`).
   - Xử lý khóa ngoại vòng giữa `ticket_part` và `part_transaction` bằng quy trình chèn 3 bước.
 - **Cách con người kiểm chứng:**
-  - Chạy migration trên PostgreSQL 16 local, kiểm tra schema tạo đầy đủ 6 bảng, 6 index và 1 circular FK.
-  - Chạy seed script lần 1: kiểm tra số lượng bản ghi bằng truy vấn `COUNT(*)` (6 trung tâm, 180 linh kiện, 717 tồn kho, 7.805 phiếu, 4.063 phiếu-linh kiện, 4.954 giao dịch).
+  - Chạy migration trên PostgreSQL 16 local, kiểm tra schema tạo đầy đủ 7 bảng, 6 index và 1 circular FK.
+  - Chạy seed script lần 1: kiểm tra số lượng bản ghi bằng truy vấn `COUNT(*)` (6 trung tâm, 38 nhân viên, 180 linh kiện, 717 tồn kho, 7.805 phiếu, 4.063 phiếu-linh kiện, 4.954 giao dịch).
   - Chạy seed script lần 2: xác minh tính **idempotent** (0 bản ghi mới, 0 lỗi phát sinh).
 
 ### Giai đoạn 4 & 5: Hiện thực Nghiệp vụ & Bộ Kiểm thử

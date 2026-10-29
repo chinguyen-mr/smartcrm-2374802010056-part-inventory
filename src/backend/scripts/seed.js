@@ -66,8 +66,29 @@ async function seed() {
     }
     console.log(`   -> Đã nạp ${scCount}/${scRows.length} trung tâm mới.`);
 
-    // 2. Seed danh mục linh kiện (part)
-    console.log("2. Nạp danh mục linh kiện thay thế...");
+    // 2. Seed nhân viên (employee) từ technicians.csv
+    console.log("2. Nạp danh mục nhân viên (employee)...");
+    const empPath = path.join(sampleDir, "technicians.csv");
+    const { rows: empRows } = readCSV(empPath);
+    let empCount = 0;
+    for (const e of empRows) {
+      // Ánh xạ level từ dataset sang role trong L5
+      // CAO_CAP → QUAN_LY_TRUNG_TAM (quản lý có quyền nhập kho, đặt ngưỡng)
+      // TRUNG_CAP, SO_CAP → KTV (kỹ thuật viên tra cứu, xuất kho)
+      const role = e.level === "CAO_CAP" ? "QUAN_LY_TRUNG_TAM" : "KTV";
+      const isActive = e.is_active === "true";
+      const res = await client.query(
+        `INSERT INTO employee (employee_id, employee_code, full_name, center_id, role, is_active)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         ON CONFLICT (employee_id) DO NOTHING`,
+        [Number(e.technician_id), e.technician_code, e.ho_ten, Number(e.center_id), role, isActive]
+      );
+      if (res.rowCount > 0) empCount++;
+    }
+    console.log(`   -> Đã nạp ${empCount}/${empRows.length} nhân viên mới.`);
+
+    // 3. Seed danh mục linh kiện (part)
+    console.log("3. Nạp danh mục linh kiện thay thế...");
     const partPath = path.join(sampleDir, "parts.csv");
     const { rows: partRows } = readCSV(partPath);
     let partCount = 0;
@@ -82,8 +103,8 @@ async function seed() {
     }
     console.log(`   -> Đã nạp ${partCount}/${partRows.length} linh kiện mới.`);
 
-    // 3. Seed số dư tồn kho (part_stock)
-    console.log("3. Nạp số dư tồn kho (part_stock)...");
+    // 4. Seed số dư tồn kho (part_stock)
+    console.log("4. Nạp số dư tồn kho (part_stock)...");
     const stockPath = path.join(sampleDir, "part_stock.csv");
     const { rows: stockRows } = readCSV(stockPath);
     let stockCount = 0;
@@ -103,8 +124,8 @@ async function seed() {
     }
     console.log(`   -> Đã nạp ${stockCount}/${stockRows.length} dòng tồn kho mới.`);
 
-    // 4. Seed tham chiếu phiếu bảo hành (ticket_ref)
-    console.log("4. Nạp tham chiếu phiếu bảo hành (ticket_ref)...");
+    // 5. Seed tham chiếu phiếu bảo hành (ticket_ref)
+    console.log("5. Nạp tham chiếu phiếu bảo hành (ticket_ref)...");
     const ticketPath = path.join(sampleDir, "tickets_history.csv");
     const { rows: ticketRows } = readCSV(ticketPath);
     let ticketCount = 0;
@@ -152,8 +173,8 @@ async function seed() {
     const ticketMap = new Map();
     ticketMapRes.rows.forEach((r) => ticketMap.set(r.ticket_code, Number(r.ticket_id)));
 
-    // 5. Seed lịch sử giao dịch kho (part_transactions.csv)
-    console.log("5. Nạp lịch sử giao dịch kho (part_transactions)...");
+    // 6. Seed lịch sử giao dịch kho (part_transactions.csv)
+    console.log("6. Nạp lịch sử giao dịch kho (part_transactions)...");
     const txPath = path.join(sampleDir, "part_transactions.csv");
     const { rows: txRows } = readCSV(txPath);
     let txCount = 0;
@@ -212,10 +233,11 @@ async function seed() {
     }
     console.log(`   -> Đã nạp ${txCount}/${txRows.length} giao dịch kho mới.`);
 
-    // 6. Cập nhật lại SEQUENCE tự tăng cho các bảng để tránh lỗi ID trùng khi người dùng tạo mới
-    console.log("6. Cập nhật Identity Sequence cho các bảng...");
+    // 7. Cập nhật lại SEQUENCE tự tăng cho các bảng để tránh lỗi ID trùng khi người dùng tạo mới
+    console.log("7. Cập nhật Identity Sequence cho các bảng...");
     await client.query(`
       SELECT setval(pg_get_serial_sequence('service_center', 'center_id'), COALESCE(MAX(center_id), 1)) FROM service_center;
+      SELECT setval(pg_get_serial_sequence('employee', 'employee_id'), COALESCE(MAX(employee_id), 1)) FROM employee;
       SELECT setval(pg_get_serial_sequence('part', 'part_id'), COALESCE(MAX(part_id), 1)) FROM part;
       SELECT setval(pg_get_serial_sequence('ticket_ref', 'ticket_id'), COALESCE(MAX(ticket_id), 1)) FROM ticket_ref;
       SELECT setval(pg_get_serial_sequence('ticket_part', 'ticket_part_id'), COALESCE(MAX(ticket_part_id), 1)) FROM ticket_part;

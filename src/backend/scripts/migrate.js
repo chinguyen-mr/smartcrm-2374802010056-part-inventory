@@ -6,7 +6,7 @@ async function migrate() {
   const client = await pool.connect();
   try {
     console.log("=== BẮT ĐẦU CHẠY MIGRATION CSDL ===");
-    const ddlPath = path.join(__dirname, "../../../db/sql-ddl.sql");
+    const ddlPath = path.join(__dirname, "../../../sql/sql-ddl.sql");
     const ddlContent = fs.readFileSync(ddlPath, "utf-8");
 
     await client.query("BEGIN");
@@ -18,11 +18,12 @@ async function migrate() {
       DROP TABLE IF EXISTS ticket_part CASCADE;
       DROP TABLE IF EXISTS ticket_ref CASCADE;
       DROP TABLE IF EXISTS part_stock CASCADE;
+      DROP TABLE IF EXISTS employee CASCADE;
       DROP TABLE IF EXISTS part CASCADE;
       DROP TABLE IF EXISTS service_center CASCADE;
     `);
 
-    console.log("Thực thi DDL chính thức từ db/sql-ddl.sql...");
+    console.log("Thực thi DDL chính thức từ sql/sql-ddl.sql...");
     await client.query(ddlContent);
 
     await client.query("COMMIT");
