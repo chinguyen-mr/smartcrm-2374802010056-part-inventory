@@ -326,26 +326,7 @@ docker compose exec backend npm run seed
 
 ---
 
-## 12. Kịch bản Trình diễn Demo 3 phút tại Workshop Buổi 12
-
-Để phục vụ tốt nhất buổi Workshop Buổi 12, nhóm đã chuẩn bị kịch bản trình diễn trực tiếp trong 3 phút:
-
-1. **Phút 1 — Luồng nghiệp vụ E2E L5 (Happy Path):**
-   - Mở màn hình **M1**: Chọn trung tâm `TT01`, tra cứu linh kiện Samsung/Apple, bấm lọc "Dưới ngưỡng" để thấy các mặt hàng cần nhập bổ sung.
-   - Chuyển sang **M2**: Đăng nhập vai trò `QUAN_LY_TRUNG_TAM`, thực hiện nhập kho linh kiện `PIN-IP-13` số lượng 20 cái kèm số chứng từ `PN-DEMO-01` $\rightarrow$ Số dư tồn tăng tức thì, sổ cái giao dịch cập nhật.
-   - Chuyển sang **M3**: Đăng nhập vai trò `KTV`, nhập mã phiếu bảo hành hợp lệ `BH-TEST-ACTIVE-01`, chọn xuất 2 pin $\rightarrow$ Giao dịch xuất hoàn tất, tra cứu phiếu thấy ngay dòng vật tư vừa xuất.
-2. **Phút 2 — Xử lý ngoại lệ, vi phạm dữ liệu & Quy tắc nghiệp vụ (Negative Path):**
-   - Thử xuất kho với số lượng lớn hơn tồn khả dụng (QT-09) $\rightarrow$ Hệ thống từ chối `409 INSUFFICIENT_STOCK`, hiển thị banner đỏ rõ ràng, tồn kho không bị giảm.
-   - Thử xuất kho cho phiếu đã đóng `BH-TEST-INVALID-01` $\rightarrow$ Bị từ chối với thông báo trạng thái phiếu không đủ điều kiện.
-   - Thử nhập số âm hoặc bỏ trống trường $\rightarrow$ Hệ thống phản hồi mã lỗi và hiển thị viền đỏ báo lỗi ngay dưới input field.
-3. **Phút 3 — Kiểm chứng kỹ thuật & Chất lượng mã nguồn:**
-   - Chạy lệnh `npm test` trong terminal $\rightarrow$ Thể hiện trực tiếp 31/31 bài test (22 Unit + 9 Integration) PASS trong vài giây.
-   - Trình bày tóm tắt 1 lỗi thực tế từ `docs/bug-log.md` theo 4 bước (Tái lập $\rightarrow$ Khoanh vùng $\rightarrow$ Sửa gốc $\rightarrow$ Xác nhận).
-   - Minh chứng tính Idempotent: Chạy `npm run seed` lần 2 ghi nhận `0 bản ghi mới`.
-
----
-
-## 13. Bảng nghiệm thu tiêu chí BT2 và Checklist Buổi 10
+## 12. Bảng nghiệm thu tiêu chí BT2 và Checklist Buổi 10
 
 | Mã tiêu chí | Nội dung yêu cầu | Kết quả thực tế | Lệnh / Cách kiểm tra | Bằng chứng | Trạng thái |
 |:---:|:---|:---|:---|:---|:---:|
