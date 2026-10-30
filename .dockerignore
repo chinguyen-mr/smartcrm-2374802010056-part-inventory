@@ -1,0 +1,21 @@
+# Git & IDE
+.git
+.gitignore
+.vscode
+.idea
+.claude
+AGENTS.md
+CLAUDE.md
+
+# Local environment & secrets
+.env
+.ua
+TaiLieu/
+evidence/
+
+# Dependencies & build outputs
+node_modules
+**/node_modules
+dist
+**/dist
+npm-debug.log

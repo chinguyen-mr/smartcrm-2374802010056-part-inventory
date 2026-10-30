@@ -1,0 +1,90 @@
+# ==============================================================================
+# SMART CRM — DOCKER COMPOSE DỊCH VỤ TOÀN TRÌNH (STACK SE)
+# Phân hệ: L5 — Quản lý kho linh kiện thay thế (Mekong Mobile)
+# Khởi chạy: docker compose up -d --build
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. Cơ sở dữ liệu quan hệ PostgreSQL 16
+  # ----------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: smartcrm_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-smart_crm}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-smart_crm}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - smartcrm_network
+
+  # ----------------------------------------------------------------------------
+  # 2. Dịch vụ Máy chủ Backend (Node.js 20 / Express)
+  # ----------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./src/backend
+      dockerfile: Dockerfile
+    container_name: smartcrm_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      APP_PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-smart_crm}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-smartcrm_jwt_secret_dev_2026}
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - smartcrm_network
+
+  # ----------------------------------------------------------------------------
+  # 3. Dịch vụ Giao diện Frontend (React 19 / Vite / Nginx)
+  # ----------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+    container_name: smartcrm_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - smartcrm_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  smartcrm_network:
+    driver: bridge

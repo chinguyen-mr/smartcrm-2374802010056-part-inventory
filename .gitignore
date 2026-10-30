@@ -26,6 +26,7 @@ models/*.pt
 # IDE / OS
 .vscode/
 .idea/
+.claude/
 .postman/
 postman/
 .DS_Store

@@ -43,16 +43,22 @@ smartcrm-2374802010056-part-inventory/
 │       └── tickets_history.csv   # 7.800 phiếu bảo hành tham chiếu
 ├── docs/
 │   ├── srs.md                    # Đặc tả yêu cầu phần mềm SRS luồng L5 (từ BT1)
-│   ├── erd.md                    # Mô hình dữ liệu quan hệ ERD chi tiết
+│   ├── erd.md                    # Mô hình dữ liệu quan hệ ERD chi tiết (7 bảng)
+│   ├── erd.drawio.md             # Thuyết minh kỹ thuật mô hình dữ liệu ERD
 │   ├── architecture.md           # Thiết kế kiến trúc 3 lớp đề xuất (từ BT1)
 │   ├── architecture-thuc-te.md   # Sơ đồ & mô tả kiến trúc ĐÃ HIỆN THỰC (BT2)
 │   ├── use-cases.md              # Đặc tả các Use Case cốt lõi
 │   ├── api-contract.md           # Hợp đồng API chi tiết
-│   ├── thay-doi-thiet-ke.md      # Nhật ký 5 quyết định thay đổi kỹ thuật (MỚI ở BT2 - bắt buộc)
+│   ├── thay-doi-thiet-ke.md      # Nhật ký 10 quyết định thay đổi kỹ thuật (TD-01 đến TD-10)
 │   ├── ai-disclosure.md          # Khai báo sử dụng AI & cách thức kiểm chứng (cập nhật BT2)
-│   └── diagrams/                 # Các sơ đồ nguồn định dạng .drawio
+│   ├── bug-log.md                # Nhật ký sửa lỗi kỹ thuật 4 bước (BUG-01 đến BUG-04)
+│   └── diagrams/                 # Các sơ đồ nguồn định dạng .drawio (erd.drawio)
+├── evidence/
+│   └── BT2_screenshots/          # 28 ảnh minh chứng thực tế được tổ chức theo 9 thư mục
 ├── src/
 │   ├── backend/
+│   │   ├── Dockerfile            # Container Node.js 20 Alpine, non-root, healthcheck
+│   │   ├── .dockerignore
 │   │   ├── scripts/
 │   │   │   ├── migrate.js        # Script migration tạo bảng từ database trống
 │   │   │   └── seed.js           # Script nạp dữ liệu mẫu an toàn (Idempotent)
@@ -60,24 +66,29 @@ smartcrm-2374802010056-part-inventory/
 │   │   │   ├── config/db.js      # Kết nối PostgreSQL tập trung
 │   │   │   ├── errors/           # Lớp lỗi nghiệp vụ AppError độc lập HTTP
 │   │   │   ├── middleware/       # Auth JWT, Role check, Error handler tập trung
-│   │   │   ├── validators/       # Kiểm định dạng đầu vào tầng 1
+│   │   │   ├── validators/       # Kiểm định dạng đầu vào tầng 1 (camelCase & snake_case)
 │   │   │   ├── repositories/     # Đọc/ghi CSDL bằng câu lệnh SQL
 │   │   │   ├── services/         # Toàn bộ quy tắc nghiệp vụ L5 (QT-09, QT-13, QT-14)
 │   │   │   └── routes/           # Controllers HTTP ánh xạ API Contract
 │   │   ├── tests/
 │   │   │   ├── unit/             # 22 Unit Tests (mock repository, không phụ thuộc DB)
 │   │   │   └── integration/      # 9 Integration Tests chạy toàn trình với CSDL
-│   │   ├── server.js             # Entrypoint Backend Express
+│   │   ├── server.js             # Entrypoint Backend Express (có /api/health)
 │   │   └── package.json
 │   └── frontend/
+│       ├── Dockerfile            # Multi-stage build (Vite -> Nginx Alpine)
+│       ├── nginx.conf            # Nginx reverse proxy /api/ & fallback SPA
+│       ├── .dockerignore
 │       ├── src/
-│       │   ├── api/client.js     # Lớp API Client tập trung
+│       │   ├── api/client.js     # Lớp API Client tập trung (bắt 401/403)
 │       │   ├── components/       # Header, AlertBanner, LoadingSpinner, EmptyState
 │       │   ├── screens/          # 3 màn hình M1, M2, M3
 │       │   ├── App.jsx
 │       │   └── index.css         # Styling Vanilla CSS hiện đại
 │       ├── vite.config.js
 │       └── package.json
+├── docker-compose.yml            # Điều phối toàn trình 3 dịch vụ (Postgres, Backend, Frontend)
+├── .dockerignore
 ├── .env.example                  # Mẫu khai báo biến môi trường
 └── README.md
 ```
@@ -244,13 +255,14 @@ Trên thanh điều hướng đầu trang có sẵn công cụ chuyển đổi *
 
 ---
 
-## 10. Trạng thái hiện tại của module (Buổi 8, 9, 10)
+## 10. Trạng thái hiện tại của module (Buổi 8, 9, 10, 11)
 
-Theo yêu cầu chuẩn của Buổi 8, 9 và 10, hiện trạng triển khai của module L5 được nghiệm thu như sau:
+Theo yêu cầu chuẩn của Buổi 8, 9, 10 và 11, hiện trạng triển khai của module L5 được nghiệm thu như sau:
 
-- [x] **Xử lý phản hồi BT1:** Đã ghi nhận 9 quyết định kỹ thuật chuẩn hóa tại [`docs/thay-doi-thiet-ke.md`](docs/thay-doi-thiet-ke.md) (từ `TD-01` đến `TD-09`).
-- [x] **Migration CSDL sạch:** Dựng tự động 6 bảng PostgreSQL (`service_center`, `part`, `part_stock`, `ticket_ref`, `ticket_part`, `part_transaction`) từ CSDL trống.
-- [x] **Seed dữ liệu mẫu an toàn (Idempotent):** Nạp 100% dữ liệu gốc Mekong Mobile (6 TT, 180 linh kiện, 717 tồn kho, 7.805 phiếu, 4.954 giao dịch). Chạy lại ghi nhận `0 bản ghi mới`.
+- [x] **Xử lý phản hồi BT1 & Góp ý Giảng viên:** Đã ghi nhận 10 quyết định kỹ thuật chuẩn hóa tại [`docs/thay-doi-thiet-ke.md`](docs/thay-doi-thiet-ke.md) (từ `TD-01` đến `TD-10`), xử lý trọn vẹn 8 góp ý G1–G8 của Giảng viên.
+- [x] **Nhật ký sửa lỗi kỹ thuật 4 bước:** Đã ghi nhận 4 lỗi thực tế được điều tra và khắc phục triệt để tại [`docs/bug-log.md`](docs/bug-log.md) (`BUG-01` đến `BUG-04`).
+- [x] **Migration CSDL sạch:** Dựng tự động đầy đủ 7 bảng PostgreSQL (`service_center`, `employee`, `part`, `part_stock`, `ticket_ref`, `ticket_part`, `part_transaction`) từ CSDL trống.
+- [x] **Seed dữ liệu mẫu an toàn (Idempotent):** Nạp 100% dữ liệu gốc Mekong Mobile (6 TT, 38 nhân sự kỹ thuật, 180 linh kiện, 717 tồn kho, 7.805 phiếu, 4.063 liên kết phiếu-LK, 4.954 giao dịch). Chạy lại ghi nhận `0 bản ghi mới`.
 - [x] **CRUD 3 lớp độc lập:** Thực thể `part` và `part_stock` đầy đủ thao tác qua `routes` $\rightarrow$ `services` $\rightarrow$ `repositories`. Service không phụ thuộc `req`/`res`.
 - [x] **Bảo toàn quy tắc nghiệp vụ L5:**
   - [x] `QT-09`: Khóa dòng `SELECT ... FOR UPDATE`, chặn xuất vượt tồn, cảnh báo đúng điều kiện `quantity < min_threshold && min_threshold > 0` (bằng ngưỡng không cảnh báo).
@@ -270,7 +282,77 @@ Theo yêu cầu chuẩn của Buổi 8, 9 và 10, hiện trạng triển khai c�
   - [x] Mã 403 Forbidden (thông báo không đủ quyền, không làm mất phiên làm việc).
 - [x] **Kiểm thử tự động:** 31/31 bài test PASS 100% (22 Unit Tests + 9 Integration Tests với PostgreSQL thật) chạy bằng 1 lệnh `npm test`.
 
-- **Phần mở rộng tương lai (ngoài phạm vi nộp BT1):**
-  - Chức năng COULD (US8: Xem danh sách phiếu chờ linh kiện) được bảo lưu cho các đợt phát triển tiếp theo sau khi hệ thống bảo hành hoàn tất API bên ngoài.
+---
+
+## 11. Đóng gói và Điều phối dịch vụ với Docker (Buổi 11)
+
+Dự án đã chuẩn bị đầy đủ cấu hình đóng gói theo chuẩn Stack SE phục vụ triển khai container hóa:
+
+- **Backend Dockerfile:** Multi-stage build trên nền `node:20-alpine`, chạy bằng tài khoản không đặc quyền (`USER node`), có endpoint kiểm tra sức khỏe `HEALTHCHECK` tại `GET /api/health`.
+- **Frontend Dockerfile:** Multi-stage build (Stage 1: Vite build bundle $\rightarrow$ Stage 2: `nginx:1.27-alpine` phục vụ file tĩnh và reverse proxy chuyển tiếp các request `/api/` về container Backend).
+- **Docker Compose (`docker-compose.yml`):** Điều phối 3 container đồng bộ gồm PostgreSQL 16 Alpine, Express Backend và Nginx Frontend, khởi động theo trạng thái healthy (`depends_on: { condition: service_healthy }`).
+
+### 11.1. Lệnh khởi chạy với Docker
+```bash
+# Khởi động toàn bộ cụm dịch vụ ở chế độ chạy nền
+docker compose up -d --build
+
+# Kiểm tra trạng thái các container (phải đạt trạng thái healthy)
+docker compose ps
+
+# Xem log hoạt động theo thời gian thực
+docker compose logs -f
+```
+
+### 11.2. Chạy Migration và Seed trong Docker
+```bash
+# Khởi tạo CSDL 7 bảng bên trong container backend
+docker compose exec backend npm run migrate
+
+# Nạp dữ liệu mẫu ban đầu
+docker compose exec backend npm run seed
+```
+
+> **Ghi chú môi trường:** Trên máy tính cá nhân của sinh viên hiện đang dùng Windows chưa cài Docker Desktop, dự án được kiểm thử và xác nhận hoạt động 100% qua quy trình **Native** (Node.js + PostgreSQL). Cấu hình Docker đã được lập trình chuẩn mực và sẵn sàng chạy trên bất kỳ máy chấm bài hoặc server nào có cài Docker.
+
+---
+
+## 12. Kịch bản Trình diễn Demo 3 phút tại Workshop Buổi 12
+
+Để phục vụ tốt nhất buổi Workshop Buổi 12, nhóm đã chuẩn bị kịch bản trình diễn trực tiếp trong 3 phút:
+
+1. **Phút 1 — Luồng nghiệp vụ E2E L5 (Happy Path):**
+   - Mở màn hình **M1**: Chọn trung tâm `TT01`, tra cứu linh kiện Samsung/Apple, bấm lọc "Dưới ngưỡng" để thấy các mặt hàng cần nhập bổ sung.
+   - Chuyển sang **M2**: Đăng nhập vai trò `QUAN_LY_TRUNG_TAM`, thực hiện nhập kho linh kiện `PIN-IP-13` số lượng 20 cái kèm số chứng từ `PN-DEMO-01` $\rightarrow$ Số dư tồn tăng tức thì, sổ cái giao dịch cập nhật.
+   - Chuyển sang **M3**: Đăng nhập vai trò `KTV`, nhập mã phiếu bảo hành hợp lệ `BH-TEST-ACTIVE-01`, chọn xuất 2 pin $\rightarrow$ Giao dịch xuất hoàn tất, tra cứu phiếu thấy ngay dòng vật tư vừa xuất.
+2. **Phút 2 — Xử lý ngoại lệ, vi phạm dữ liệu & Quy tắc nghiệp vụ (Negative Path):**
+   - Thử xuất kho với số lượng lớn hơn tồn khả dụng (QT-09) $\rightarrow$ Hệ thống từ chối `409 INSUFFICIENT_STOCK`, hiển thị banner đỏ rõ ràng, tồn kho không bị giảm.
+   - Thử xuất kho cho phiếu đã đóng `BH-TEST-INVALID-01` $\rightarrow$ Bị từ chối với thông báo trạng thái phiếu không đủ điều kiện.
+   - Thử nhập số âm hoặc bỏ trống trường $\rightarrow$ Hệ thống phản hồi mã lỗi và hiển thị viền đỏ báo lỗi ngay dưới input field.
+3. **Phút 3 — Kiểm chứng kỹ thuật & Chất lượng mã nguồn:**
+   - Chạy lệnh `npm test` trong terminal $\rightarrow$ Thể hiện trực tiếp 31/31 bài test (22 Unit + 9 Integration) PASS trong vài giây.
+   - Trình bày tóm tắt 1 lỗi thực tế từ `docs/bug-log.md` theo 4 bước (Tái lập $\rightarrow$ Khoanh vùng $\rightarrow$ Sửa gốc $\rightarrow$ Xác nhận).
+   - Minh chứng tính Idempotent: Chạy `npm run seed` lần 2 ghi nhận `0 bản ghi mới`.
+
+---
+
+## 13. Bảng nghiệm thu tiêu chí BT2 và Checklist Buổi 10
+
+| Mã tiêu chí | Nội dung yêu cầu | Kết quả thực tế | Lệnh / Cách kiểm tra | Bằng chứng | Trạng thái |
+|:---:|:---|:---|:---|:---|:---:|
+| **C1** | Clone & Chạy theo README | Clone vào thư mục mới, cấu hình `.env`, chạy migrate/seed/build thành công | `git clone ...`, `npm install`, `npm run migrate`, `npm run seed` | Thư mục `evidence/08_reproducibility/` | `PASS` |
+| **C2** | Tách lớp chuẩn 3 lớp | Decoupled 3 layers (`routes` $\rightarrow$ `services` $\rightarrow$ `repositories`), Service độc lập HTTP | Rà soát `src/backend/src/` | `docs/architecture-thuc-te.md`, ảnh `02_architecture_mapping.png` | `PASS` |
+| **C3** | CRUD 2 thực thể cốt lõi | Đã hiện thực đầy đủ CRUD cho 2 thực thể `part` và `part_stock` | Gọi API hoặc chạy test | Integration test `api.test.js` | `PASS` |
+| **C4** | Tối thiểu 3 loại test PASS bằng 1 lệnh | 31/31 tests PASS (Positive, Boundary, Negative/Invalid, Integration) | `npm test` | Output terminal, ảnh `13_backend_test_summary.png` | `PASS` |
+| **C5** | Khả năng chạy lại (Idempotency) | Chạy lại `npm run seed` lần 2 nạp 0 dòng mới, không lỗi, không trùng lặp | `npm run seed` (chạy 2 lần) | Ảnh `24_seed_rerun_idempotency.png` | `PASS` |
+| **C6** | Quản lý phụ thuộc & Lockfile | Phiên bản ghim cố định, `package-lock.json` được commit, không có secret | Rà soát `package.json`, `package-lock.json` | Commit history, `package-lock.json` | `PASS` |
+| **C7** | Dữ liệu sai bị từ chối an toàn | Dữ liệu sai (số lượng $\le 0$, xuất vượt tồn, sai phân quyền) bị từ chối rõ ràng, hệ thống không sập | Gọi API test invalid | Unit test TC05–TC10, TC14–TC16, ảnh `12_M3_insufficient_stock.png` | `PASS` |
+| **UI-01** | 3 màn hình gọi API thật | M1 (Tra cứu/Cảnh báo), M2 (Nhập kho), M3 (Xuất kho theo phiếu) | Mở trình duyệt `http://localhost:5173` | Ảnh `04_M1_stock_lookup.png`, `08_M2_receipt_form.png`, `10_M3_issue_form.png` | `PASS` |
+| **UI-02** | 3 trạng thái giao diện | Đầy đủ Loading, Empty và Error (kèm nút Thử lại) | Thao tác trên UI và ngắt kết nối mạng | Ảnh `18_UI_loading.png`, `19_UI_empty.png`, `20_UI_error.png` | `PASS` |
+| **DOC-01** | Hồ sơ tài liệu kỹ thuật | Đồng bộ ERD 7 bảng, DDL, Draw.io, SRS, thay đổi thiết kế, Bug Log, Khai báo AI | Kiểm tra thư mục `docs/` | `docs/erd.md`, `thay-doi-thiet-ke.md`, `bug-log.md`, `ai-disclosure.md` | `PASS` |
+| **DOC-02** | Báo cáo PDF BT2 | File PDF `BT2_2374802010056_NguyenVanChi.pdf` hoàn thiện theo mẫu đề bài | Mở file tại `TaiLieu/BuoiHoc/` | `BT2_2374802010056_NguyenVanChi.pdf` (10.9 MB) | `PASS` |
+| **GIT-01** | Quản lý Git & Tag v0.2 | Nhánh sạch sẽ, lịch sử commit rõ ràng (> 20 commits), tag `v0.2` đã tạo | `git status`, `git tag -l` | Ảnh `26_git_status.png`, `27_git_tag_v02.png` | `PASS` |
+| **DOCKER** | Đóng gói Docker Compose | Đã tạo Dockerfile Backend, Dockerfile Frontend, Nginx conf, docker-compose.yml | Đọc cấu hình `docker-compose.yml` | `docker-compose.yml`, `src/backend/Dockerfile`, `src/frontend/Dockerfile` | `READY (NATIVE_PASS)` |
+
 
 

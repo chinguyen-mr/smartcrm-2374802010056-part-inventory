@@ -40,6 +40,24 @@ app.get("/api/hello", (req, res) => {
   });
 });
 
+// Endpoint kiểm tra sức khỏe hệ thống (Healthcheck cho Docker/Monitoring)
+app.get("/api/health", async (req, res) => {
+  try {
+    await pool.query("SELECT 1");
+    res.json({
+      status: "UP",
+      database: "CONNECTED",
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: "DOWN",
+      database: "DISCONNECTED",
+      error: error.message,
+    });
+  }
+});
+
 // Endpoint kiểm tra Database
 app.get("/api/db-test", async (req, res, next) => {
   try {

@@ -49,8 +49,8 @@ Tài liệu này ghi nhận phạm vi và cách thức sử dụng công cụ AI
 
 ## 3. Quyết định kỹ thuật của sinh viên (Human Judgment)
 
-1. **Ranh giới module L5 và `ticket_ref`:** Xác định L5 là module quản trị kho, không kiêm nhiệm quản lý vòng đời phiếu bảo hành. Bảng `ticket_ref` được quy định rõ là bảng tham chiếu mô phỏng nội bộ cho prototype.
-2. **Loại bỏ bảng `employee`:** Không lưu nhân viên dư thừa trong schema của L5 vì thông tin người dùng được trích xuất từ JWT token claim của hệ thống xác thực tập trung.
+1. **Ranh giới module L5 và `ticket_ref`:** Xác định L5 là module quản trị kho, không kiêm nhiệm quản lý vòng đời phiếu bảo hành. Bảng `ticket_ref` được quy định rõ là bảng tham chiếu mô phỏng nội bộ cho prototype có bổ sung cột `status` để xác minh trạng thái cho phép xuất kho.
+2. **Bổ sung và chuẩn hóa bảng `employee` (Theo góp ý Giảng viên):** Tiếp thu góp ý của Giảng viên hướng dẫn (G1, G2), nhóm đã bổ sung bảng `employee` (38 nhân sự kỹ thuật từ dataset `technicians.csv`) vào DDL 7 bảng và ERD để làm rõ tác nhân thao tác kho L5 (KTV và QLTT), đồng thời phân quyền chính xác theo trung tâm (QT-14).
 3. **Quy tắc ngưỡng `min_threshold`:** Chốt `NOT NULL DEFAULT 0` và giá trị `0` là chưa cấu hình cảnh báo, loại bỏ hoàn toàn giá trị `NULL` để câu lệnh SQL tường minh và hiệu năng cao.
 4. **Cơ chế phân quyền:** Chặn truy cập chéo trung tâm (`QT-14`) ngay tại Service layer bằng cách so khớp `centerId` của người dùng đăng nhập với `centerId` của tài nguyên yêu cầu, trả mã lỗi `403 FORBIDDEN`.
 
