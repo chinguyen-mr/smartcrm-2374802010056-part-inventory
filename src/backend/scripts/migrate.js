@@ -21,6 +21,7 @@ async function migrate() {
       DROP TABLE IF EXISTS employee CASCADE;
       DROP TABLE IF EXISTS part CASCADE;
       DROP TABLE IF EXISTS service_center CASCADE;
+      DROP TABLE IF EXISTS inventories, inventory_transactions, parts, service_centers CASCADE;
     `);
 
     console.log("Thực thi DDL chính thức từ sql/sql-ddl.sql...");
