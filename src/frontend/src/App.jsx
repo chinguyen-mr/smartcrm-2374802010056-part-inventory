@@ -47,8 +47,24 @@ export default function App() {
     return () => window.removeEventListener("auth:expired", handleAuthExpired);
   }, []);
 
-  const handleRoleOrCenterChange = (newRole, newCenterId) => {
-    initAuth(newRole, newCenterId);
+  const handleRoleOrCenterChange = async (newRole, newCenterId) => {
+    setAuthenticating(true);
+    setAuthReady(false);
+    setAuthError(null);
+    try {
+      await loginDemo({
+        role: newRole,
+        center_id: newCenterId,
+        username: newRole === "KTV" ? `ktv_tt0${newCenterId}` : `qltt_tt0${newCenterId}`,
+      });
+      setRole(newRole);
+      setCenterId(newCenterId);
+      setAuthReady(true);
+    } catch (err) {
+      setAuthError("Không thể kết nối Backend để cấp token xác thực: " + err.message);
+    } finally {
+      setAuthenticating(false);
+    }
   };
 
   return (
@@ -56,9 +72,7 @@ export default function App() {
       {/* Thanh Header ứng dụng */}
       <Header
         role={role}
-        setRole={setRole}
         centerId={centerId}
-        setCenterId={setCenterId}
         onRoleOrCenterChange={handleRoleOrCenterChange}
       />
 
@@ -111,9 +125,9 @@ export default function App() {
           </div>
         )}
 
-        {authReady && activeTab === "M1" && <StockLookupScreen centerId={centerId} role={role} />}
-        {authReady && activeTab === "M2" && <StockReceiptScreen centerId={centerId} role={role} />}
-        {authReady && activeTab === "M3" && <StockIssueScreen centerId={centerId} role={role} />}
+        {authReady && activeTab === "M1" && <StockLookupScreen key={`${centerId}-${role}`} centerId={centerId} role={role} />}
+        {authReady && activeTab === "M2" && <StockReceiptScreen key={`${centerId}-${role}`} centerId={centerId} role={role} />}
+        {authReady && activeTab === "M3" && <StockIssueScreen key={`${centerId}-${role}`} centerId={centerId} role={role} />}
       </main>
     </div>
   );

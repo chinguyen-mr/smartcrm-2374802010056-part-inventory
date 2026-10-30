@@ -9,17 +9,13 @@ const CENTERS = [
   { id: 6, code: "TT06", name: "TTBH Cầu Giấy (Hà Nội)" },
 ];
 
-export default function Header({ role, setRole, centerId, setCenterId, onRoleOrCenterChange }) {
+export default function Header({ role, centerId, onRoleOrCenterChange }) {
   const handleRoleChange = (e) => {
-    const newRole = e.target.value;
-    setRole(newRole);
-    onRoleOrCenterChange(newRole, centerId);
+    onRoleOrCenterChange(e.target.value, centerId);
   };
 
   const handleCenterChange = (e) => {
-    const newCenter = Number(e.target.value);
-    setCenterId(newCenter);
-    onRoleOrCenterChange(role, newCenter);
+    onRoleOrCenterChange(role, Number(e.target.value));
   };
 
   return (
