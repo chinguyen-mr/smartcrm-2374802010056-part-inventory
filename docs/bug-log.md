@@ -6,12 +6,12 @@ Tài liệu này ghi nhận toàn bộ các lỗi kỹ thuật thực tế đư�
 
 ## 1. Bảng tổng hợp các lỗi kỹ thuật (Bug Registry)
 
-| ID | Mức độ (Severity) | Vị trí phát hiện | Triệu chứng tóm tắt | Trạng thái | Commit khắc phục |
-|:---:|:---:|:---|:---|:---:|:---:|
-| **BUG-01** | `MEDIUM` | `src/backend/src/validators/stock.validator.js` | Từ chối hợp lệ khi Frontend gửi payload dạng camelCase (`minThreshold`) | `RESOLVED` | `76e3fd4` |
-| **BUG-02** | `MEDIUM` | `src/backend/src/middleware/errorHandler.js` | Backend trả lỗi validation mảng thô, Frontend không ánh xạ được vào từng input | `RESOLVED` | `7dda898` |
-| **BUG-03** | `HIGH` | `src/frontend/src/api/client.js` & `App.jsx` | 401 không tự đăng xuất làm treo app; 403 xóa nhầm phiên đăng nhập | `RESOLVED` | `5256eed` |
-| **BUG-04** | `HIGH` | `sql/sql-ddl.sql`, `seed.js`, `erd.drawio` | Lệch mô hình dữ liệu (thiếu `employee`, thiếu cột `status`, sai quan hệ FK) theo góp ý GV | `RESOLVED` | `ff3f402` |
+| ID | Triệu chứng | Nguyên nhân | Cách sửa | Cách xác nhận |
+|:---:|:---|:---|:---|:---|
+| **BUG-01** | Frontend gửi payload camelCase (`minThreshold`) bị Backend từ chối `400 BAD_REQUEST` | Validator chỉ đọc thuộc tính `snake_case` (`req.body.min_threshold`), thiếu fallback | Chuẩn hóa `min_threshold = req.body.min_threshold ?? req.body.minThreshold` | Unit test `TC17`, `TC19` và Integration test `API-IT-05` chạy PASS 100% (Commit: `76e3fd4`) |
+| **BUG-02** | Backend trả lỗi validation mảng thô `details`, Frontend không hiển thị được câu lỗi dưới từng ô nhập liệu | Middleware `errorHandler.js` chưa chuyển đổi mảng `details` sang dictionary `fields` | Bổ sung logic mapping mảng sang `fields: { [field]: message }`, bảo toàn `details` | Kiểm thử form M2/M3: tô đỏ input field, hiển thị lỗi chính xác (Commit: `7dda898`) |
+| **BUG-03** | Token hết hạn (401) làm app treo; bị cấm quyền (403) bị xóa nhầm phiên đăng nhập | `client.js` chỉ throw error chung chung, không phân biệt mã HTTP 401 và 403 | Bắt mã 401 dispatch sự kiện `auth:expired`, xóa token; bắt 403 ném lỗi phân quyền giữ session | Thử nghiệm phiên hết hạn và truy cập chéo trung tâm: hiển thị đúng modal/banner (Commit: `5256eed`) |
+| **BUG-04** | DDL/ERD thiếu bảng `employee`, thiếu cột `status` trong `ticket_ref`, sai quan hệ FK theo góp ý GV | Thiết kế BT1 xem hệ thống phiếu và nhân sự là bên ngoài, chưa mô hình hóa thực tế | Bổ sung bảng `employee` (38 KTV), thêm `status` vào `ticket_ref`, chuẩn hóa `ticket_part_id` | Chạy lại `npm run migrate` & `seed` thành công 100%, 31/31 tests PASS (Commit: `ff3f402`) |
 
 ---
 

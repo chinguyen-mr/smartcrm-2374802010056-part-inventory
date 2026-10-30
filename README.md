@@ -235,15 +235,24 @@ Trên thanh điều hướng đầu trang có sẵn công cụ chuyển đổi *
 
 ---
 
-## 8. Các lỗi thường gặp và cách xử lý
+## 8. Xử lý sự cố thường gặp (Troubleshooting)
 
-1. **Lỗi `ECONNREFUSED` hoặc không kết nối được PostgreSQL:**
-   - Kiểm tra xem dịch vụ PostgreSQL đã được khởi động chưa.
-   - Kiểm tra cổng `DB_PORT` (mặc định 5432) và mật khẩu `DB_PASSWORD` trong tệp `.env`.
-2. **Lỗi `FORBIDDEN` khi gọi API:**
-   - Đảm bảo bạn đang thao tác trên đúng trung tâm được cấp trong token. Chuyển đổi vai trò/trung tâm ở thanh Header góc trên bên phải giao diện để đồng bộ lại token.
-3. **Lỗi khi chạy `npm run migrate`:**
-   - Đảm bảo database `smart_crm` đã được tạo trong PostgreSQL trước khi chạy migration.
+Bảng chẩn đoán và khắc phục nhanh các sự cố thường gặp trong quá trình cài đặt, tái lập và chạy thử dự án:
+
+| Thông báo lỗi | Nguyên nhân | Cách khắc phục | Lệnh chạy lại để xác nhận |
+|:---|:---|:---|:---|
+| `Cannot find module '...'` | Thiếu dependencies hoặc chưa cài đặt từ lockfile | Chạy cài đặt sạch thư viện qua lockfile cho cả backend và frontend | `cd src/backend && npm ci && cd ../frontend && npm ci && cd ../..` |
+| `Node.js version is not supported` | Phiên bản Node.js máy cục bộ thấp hơn yêu cầu (< 18.x) | Cài đặt bản Node.js 20 LTS hoặc 24 LTS chính thức | `node -v` |
+| `ENOENT: no such file or directory, open '.env'` | Chưa tạo tệp cấu hình `.env` tại thư mục gốc | Sao chép tệp cấu hình mẫu `.env.example` thành `.env` | `Copy-Item .env.example .env` *(Windows)* hoặc `cp .env.example .env` *(Linux/macOS)* |
+| `KeyError / undefined process.env.DB_PASSWORD` | Thiếu biến môi trường cấu hình trong tệp `.env` | Mở tệp `.env` và điền đầy đủ 8 biến cấu hình theo mẫu `.env.example` | `Get-Content .env` |
+| `ECONNREFUSED 127.0.0.1:5432` | Không kết nối được dịch vụ PostgreSQL | Khởi động dịch vụ PostgreSQL trên máy hoặc kiểm tra cổng `DB_PORT=5432` | `Get-Service postgresql*` *(Windows)* |
+| `relation "part_stock" does not exist` | Database `smart_crm` chưa được khởi tạo bảng | Chạy script migration để tạo tự động 7 bảng từ file DDL | `npm run migrate` |
+| `Database "smart_crm" does not exist` | Chưa tạo cơ sở dữ liệu trống trong PostgreSQL | Đăng nhập PostgreSQL tạo CSDL: `CREATE DATABASE smart_crm;` | `npm run migrate` |
+| Dashboard trống, không có danh mục linh kiện | Chưa chạy nạp dữ liệu mẫu ban đầu (Seed) | Chạy script seed nạp hơn 17.000 dòng dữ liệu từ 6 file CSV mẫu | `npm run seed` |
+| `EADDRINUSE: address already in use :::3000` | Cổng 3000 bị chiếm dụng bởi tiến trình khác | Giải phóng cổng hoặc đổi `APP_PORT=3001` trong `.env` | `netstat -ano \| findstr :3000` |
+| Test PASS máy cá nhân nhưng FAIL máy mới | Bộ test bị phụ thuộc dữ liệu hoặc đường dẫn tuyệt đối | Đã dùng mock repo in-memory cho 22 unit tests; chạy test chuẩn | `npm test` |
+| `duplicate key value violates unique constraint` | Chạy seed lần hai bị lỗi nhân đôi dữ liệu | Script seed đã cài đặt `ON CONFLICT DO NOTHING`, hoàn toàn an toàn | `npm run seed` *(ghi nhận 0 bản ghi mới)* |
+| `403 FORBIDDEN: Không có quyền thao tác` | Người dùng thao tác ngoài trung tâm được phân quyền (QT-14) | Chọn đúng trung tâm tương ứng với vai trò trên thanh Header UI | Thao tác trên giao diện live |
 
 ---
 
