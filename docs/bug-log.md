@@ -6,12 +6,12 @@ Tài liệu này ghi nhận toàn bộ các lỗi kỹ thuật thực tế đư�
 
 ## 1. Bảng tổng hợp các lỗi kỹ thuật (Bug Registry)
 
-| ID | Triệu chứng | Nguyên nhân | Cách sửa | Cách xác nhận |
-|:---:|:---|:---|:---|:---|
-| **BUG-01** | Frontend gửi payload camelCase (`minThreshold`) bị Backend từ chối `400 BAD_REQUEST` | Validator chỉ đọc thuộc tính `snake_case` (`req.body.min_threshold`), thiếu fallback | Chuẩn hóa `min_threshold = req.body.min_threshold ?? req.body.minThreshold` | Unit test `TC17`, `TC19` và Integration test `API-IT-05` chạy PASS 100% (Commit: `76e3fd4`) |
-| **BUG-02** | Backend trả lỗi validation mảng thô `details`, Frontend không hiển thị được câu lỗi dưới từng ô nhập liệu | Middleware `errorHandler.js` chưa chuyển đổi mảng `details` sang dictionary `fields` | Bổ sung logic mapping mảng sang `fields: { [field]: message }`, bảo toàn `details` | Kiểm thử form M2/M3: tô đỏ input field, hiển thị lỗi chính xác (Commit: `7dda898`) |
-| **BUG-03** | Token hết hạn (401) làm app treo; bị cấm quyền (403) bị xóa nhầm phiên đăng nhập | `client.js` chỉ throw error chung chung, không phân biệt mã HTTP 401 và 403 | Bắt mã 401 dispatch sự kiện `auth:expired`, xóa token; bắt 403 ném lỗi phân quyền giữ session | Thử nghiệm phiên hết hạn và truy cập chéo trung tâm: hiển thị đúng modal/banner (Commit: `5256eed`) |
-| **BUG-04** | DDL/ERD thiếu bảng `employee`, thiếu cột `status` trong `ticket_ref`, sai quan hệ FK theo góp ý GV | Thiết kế BT1 xem hệ thống phiếu và nhân sự là bên ngoài, chưa mô hình hóa thực tế | Bổ sung bảng `employee` (38 KTV), thêm `status` vào `ticket_ref`, chuẩn hóa `ticket_part_id` | Chạy lại `npm run migrate` & `seed` thành công 100%, 31/31 tests PASS (Commit: `ff3f402`) |
+| ID | Mức độ | Triệu chứng | Nguyên nhân | Cách sửa | Cách xác nhận |
+|:---:|:---:|:---|:---|:---|:---|
+| **BUG-01** | **Major** | Frontend gửi payload camelCase (`minThreshold`) bị Backend từ chối `400 BAD_REQUEST` | Validator chỉ đọc thuộc tính `snake_case` (`req.body.min_threshold`), thiếu fallback | Chuẩn hóa `min_threshold = req.body.min_threshold ?? req.body.minThreshold` | Unit test `TC17`, `TC19` và Integration test `API-IT-05` chạy PASS 100% (Commit: `76e3fd4`) |
+| **BUG-02** | **Major** | Backend trả lỗi validation mảng thô `details`, Frontend không hiển thị được câu lỗi dưới từng ô nhập liệu | Middleware `errorHandler.js` chưa chuyển đổi mảng `details` sang dictionary `fields` | Bổ sung logic mapping mảng sang `fields: { [field]: message }`, bảo toàn `details` | Kiểm thử form M2/M3: tô đỏ input field, hiển thị lỗi chính xác (Commit: `7dda898`) |
+| **BUG-03** | **Critical** | Token hết hạn (401) làm app treo; bị cấm quyền (403) bị xóa nhầm phiên đăng nhập | `client.js` chỉ throw error chung chung, không phân biệt mã HTTP 401 và 403 | Bắt mã 401 dispatch sự kiện `auth:expired`, xóa token; bắt 403 ném lỗi phân quyền giữ session | Thử nghiệm phiên hết hạn và truy cập chéo trung tâm: hiển thị đúng modal/banner (Commit: `5256eed`) |
+| **BUG-04** | **Critical** | DDL/ERD thiếu bảng `employee`, thiếu cột `status` trong `ticket_ref`, sai quan hệ FK theo góp ý GV | Thiết kế BT1 xem hệ thống phiếu và nhân sự là bên ngoài, chưa mô hình hóa thực tế | Bổ sung bảng `employee` (38 KTV), thêm `status` vào `ticket_ref`, chuẩn hóa `ticket_part_id` | Chạy lại `npm run migrate` & `seed` thành công 100%, 31/31 tests PASS (Commit: `ff3f402`) |
 
 ---
 
@@ -19,7 +19,7 @@ Tài liệu này ghi nhận toàn bộ các lỗi kỹ thuật thực tế đư�
 
 ### 2.1. BUG-01: Không đồng bộ quy ước đặt tên (camelCase vs snake_case) trong Stock Validator
 
-1. **ID và Severity:** `BUG-01` | Mức độ: `MEDIUM` (Ảnh hưởng đến tính liên thông giữa React Frontend và Express Backend).
+1. **ID và Severity:** `BUG-01` | Mức độ: `Major` (Ảnh hưởng đến tính liên thông giữa React Frontend và Express Backend).
 2. **Phát hiện bởi:** Bộ kiểm thử đơn vị (`tests/unit/stock.service.test.js`) và kiểm thử thủ công API thiết lập ngưỡng cảnh báo `PUT /api/stock/thresholds`.
 3. **Triệu chứng:** Khi Frontend gửi payload JSON dạng camelCase (`{ centerId: 1, partId: 10, minThreshold: 5 }`), Backend trả về mã lỗi `400 BAD_REQUEST` với thông báo `min_threshold is required and must be an integer >= 0`.
 4. **Cách tái lập:**
@@ -47,7 +47,7 @@ Tài liệu này ghi nhận toàn bộ các lỗi kỹ thuật thực tế đư�
 
 ### 2.2. BUG-02: Định dạng phản hồi lỗi Validation chưa đáp ứng cấu trúc `fields` của Buổi 9
 
-1. **ID và Severity:** `BUG-02` | Mức độ: `MEDIUM` (Vi phạm hợp đồng API và tài liệu đặc tả Buổi 9).
+1. **ID và Severity:** `BUG-02` | Mức độ: `Major` (Vi phạm hợp đồng API và tài liệu đặc tả Buổi 9).
 2. **Phát hiện bởi:** Kiểm thử giao diện M2 (Nhập kho) và M3 (Xuất kho) khi submit form có trường dữ liệu không hợp lệ.
 3. **Triệu chứng:**
    - Khi người dùng bỏ trống số lượng hoặc nhập số âm, Backend trả về response: `{ error: "VALIDATION_ERROR", details: [{ field: "quantity", message: "..." }] }`.
@@ -86,7 +86,7 @@ Tài liệu này ghi nhận toàn bộ các lỗi kỹ thuật thực tế đư�
 
 ### 2.3. BUG-03: Xử lý vòng đời mã lỗi 401 (Unauthorized) và 403 (Forbidden) tại Frontend
 
-1. **ID và Severity:** `BUG-03` | Mức độ: `HIGH` (Gây tắc nghẽn luồng người dùng và trải nghiệm giao diện).
+1. **ID và Severity:** `BUG-03` | Mức độ: `Critical` (Gây tắc nghẽn luồng người dùng và trải nghiệm giao diện).
 2. **Phát hiện bởi:** Thử nghiệm kịch bản phiên làm việc hết hạn và thử nghiệm phân quyền chéo trung tâm (QT-14).
 3. **Triệu chứng:**
    - Khi token JWT hết hạn (HTTP 401), giao diện không điều hướng, người dùng nhấn các nút thao tác thì màn hình rơi vào trạng thái tải vô hạn hoặc báo lỗi kết nối mơ hồ.

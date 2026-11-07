@@ -79,3 +79,4 @@ Kế hoạch kiểm thử này được thiết lập nhằm đạt được cá
    npm test
    ```
 4. **Không phụ thuộc dữ liệu ngầm:** Hệ thống có thể chạy `npm run migrate` và `npm run seed` để thiết lập lại dữ liệu sạch từ đầu bất kỳ lúc nào.
+

@@ -50,3 +50,4 @@ Thư mục này lưu trữ toàn bộ ảnh chụp màn hình (screenshots) minh
 | [`26_git_status.png`](./26_git_status.png) | Quản lý mã nguồn | Trạng thái Git clean working tree trên nhánh `main` |
 | [`27_git_tag_v02.png`](./27_git_tag_v02.png) | Quản lý mã nguồn | Git Tag `v0.2` đã đồng bộ thành công lên remote GitHub origin |
 | [`28_required_docs.png`](./28_required_docs.png) | Tài liệu | Đầy đủ danh mục tài liệu đặc tả bắt buộc theo yêu cầu học phần |
+

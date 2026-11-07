@@ -50,7 +50,7 @@
 | **TC06** | Dữ liệu sai | Số lượng yêu cầu xuất là số âm (`-5`) hoặc bằng `0` | Từ chối với mã lỗi `400 VALIDATION_ERROR` | Ném `AppError(400)`, chặn ngay tầng kiểm tra | **PASS** |
 | **TC07** | Bảo mật | Người dùng trung tâm này yêu cầu xuất kho trung tâm khác | Từ chối truy cập chéo trung tâm với mã lỗi `403 FORBIDDEN` (QT-14) | Ném `AppError(403)`, bảo vệ đa trung tâm | **PASS** |
 | **TC08** | Dữ liệu sai | Phiếu bảo hành không tồn tại trong hệ thống tham chiếu | Từ chối với mã lỗi `404 TICKET_NOT_FOUND` | Ném `AppError(404)`, không thực hiện xuất | **PASS** |
-| **TC09** | Bảo mật | Phiếu bảo hành thuộc trung tâm khác với trung tâm xuất kho | Từ chối với mã lỗi `400 TICKET_CENTER_MISMATCH` | Ném `AppError(400)`, chặn xuất sai trung tâm | **PASS** |
+| **TC09** | Bảo mật | Phiếu bảo hành thuộc trung tâm khác với trung tâm xuất kho | Từ chối với mã lỗi `409 TICKET_CENTER_MISMATCH` | Ném `AppError(409)`, chặn xuất sai trung tâm | **PASS** |
 | **TC10** | Dữ liệu sai | Phiếu bảo hành có trạng thái không nằm trong allowlist (`DA_DONG`) | Từ chối với mã lỗi `409 TICKET_STATUS_NOT_ELIGIBLE` | Ném `AppError(409)`, chặn phiếu đã đóng | **PASS** |
 
 ### 3.2. Nhóm 2: Kiểm thử nghiệp vụ Nhập kho (ReceiptService — 6 tests)
@@ -106,3 +106,4 @@
 ## 5. Kết luận
 
 Toàn bộ 31/31 ca kiểm thử tự động đã được thực thi và đạt **PASS 100%**. Bộ kiểm thử bao phủ toàn diện 5 nhóm yêu cầu, chứng minh hệ thống vận hành ổn định, an toàn và bảo toàn tuyệt đối 3 quy tắc nghiệp vụ cốt lõi QT-09, QT-13, QT-14.
+
