@@ -19,7 +19,7 @@ x-db-env: &db-env
   DB_PORT: 5432
   DB_NAME: ${DB_NAME:-smart_crm}
   DB_USER: ${DB_USER:-postgres}
-  DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD chua dat - chay: cp .env.example .env}
+  DB_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is not set - copy .env.example to .env}"
 
 services:
   # ----------------------------------------------------------------------------
@@ -31,7 +31,7 @@ services:
     environment:
       POSTGRES_DB: ${DB_NAME:-smart_crm}
       POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD chua dat - chay: cp .env.example .env}
+      POSTGRES_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD is not set - copy .env.example to .env}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -70,7 +70,7 @@ services:
       <<: *db-env
       NODE_ENV: production
       APP_PORT: 3000
-      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET chua dat - chay: cp .env.example .env}
+      JWT_SECRET: "${JWT_SECRET:?JWT_SECRET is not set - copy .env.example to .env}"
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8088,http://localhost:5173}
       TRUST_PROXY: ${TRUST_PROXY:-0}
