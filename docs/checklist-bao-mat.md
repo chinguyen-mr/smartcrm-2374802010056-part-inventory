@@ -30,6 +30,7 @@
   - `docker-compose.yml` dùng `${JWT_SECRET:?…}` và `${DB_PASSWORD:?…}` — thiếu biến thì compose từ chối chạy, không còn giá trị mặc định.
   - Gỡ mật khẩu mặc định `"123"` trong `src/backend/src/config/db.js`.
   - **Đổi khóa:** `JWT_SECRET` trong `.env` cục bộ của sinh viên đã được thay bằng khóa ngẫu nhiên 64 ký tự hex (khóa cũ coi như đã lộ).
+- **Che token trong ảnh:** 18 ảnh `docs/screenshots/TC-*.png` (buổi 14) từng hiện nguyên chuỗi JWT trong lệnh curl; đã che bằng khối `<JWT token đã che>` (tìm vị trí token bằng Windows OCR, kiểm lại bằng OCR không còn chuỗi `eyJ…`). Bản ảnh cũ vẫn còn trong lịch sử Git, nhưng các token đó hết hạn sau 24h kể từ 09/11/2026 và được ký bằng khóa mặc định cũ đã gỡ bỏ, nên không còn dùng được.
 - **Ảnh chụp:** [`docs/screenshots/BT3-07-secret-scan.png`](screenshots/BT3-07-secret-scan.png) — `git log --all --oneline -- .env` rỗng, `.env` bị `.gitignore` dòng 2 chặn, khóa chỉ đọc từ `process.env`.
 
 ### 2. Dữ liệu vào được kiểm tra ở tầng ứng dụng — ĐÃ LÀM
