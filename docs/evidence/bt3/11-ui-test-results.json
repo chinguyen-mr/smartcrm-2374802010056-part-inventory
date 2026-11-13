@@ -1,0 +1,78 @@
+[
+  {
+    "id": "UI-01-M2-nhap-kho-thanh-cong",
+    "title": "M2 – QLTT TT01 nhập 5 linh kiện MH-SS-01 (TC-01)",
+    "expect": "Thông báo nhập kho thành công, tồn tăng 5, giao dịch NHAP xuất hiện trong lịch sử",
+    "observed": [
+      "✓ Ghi nhận nhập kho thành công! Mã giao dịch #4955. Số lượng nhập: +5. Tồn kho mới: 21. ×"
+    ]
+  },
+  {
+    "id": "UI-02-M3-xuat-kho-thanh-cong",
+    "title": "M3 – KTV TT01 xuất 2 MH-SS-02 cho phiếu BH-TEST-ACTIVE-01 (TC-02)",
+    "expect": "Thông báo xuất kho thành công, tồn giảm 2",
+    "observed": [
+      "✓ Xuất kho thành công cho phiếu [BH-TEST-ACTIVE-01]! Mã GD: #4956. Số lượng xuất: -2. Tồn còn lại: 8. ×"
+    ]
+  },
+  {
+    "id": "UI-03-M3-phieu-da-dong",
+    "title": "M3 – Xuất kho cho phiếu đã đóng BH-TEST-INVALID-01 (TC-09)",
+    "expect": "Báo lỗi phiếu ở trạng thái DA_DONG, không cho xuất",
+    "observed": [
+      "Phiếu bảo hành BH-TEST-INVALID-01 đang ở trạng thái 'DA_DONG', không thuộc diện được phép xuất linh kiện. 🔄 Thử lại ×"
+    ]
+  },
+  {
+    "id": "UI-04-M3-xuat-vuot-ton",
+    "title": "M3 – Xuất 9999 chiếc, vượt tồn kho (TC-10, QT-09)",
+    "expect": "Báo lỗi tồn kho không đủ, hiển thị tồn khả dụng",
+    "observed": [
+      "Số lượng tồn kho không đủ để xuất. Tồn hiện tại: 8, yêu cầu xuất: 9999. 🔄 Thử lại ×"
+    ]
+  },
+  {
+    "id": "UI-05-M3-phieu-khong-ton-tai",
+    "title": "M3 – Mã phiếu không tồn tại (TC-15)",
+    "expect": "Báo lỗi không tìm thấy phiếu bảo hành",
+    "observed": [
+      "Không tìm thấy phiếu bảo hành với mã BH-KHONG-TON-TAI-9999 trong hệ thống. 🔄 Thử lại ×"
+    ]
+  },
+  {
+    "id": "UI-06-M3-phieu-khac-trung-tam",
+    "title": "M3 – Phiếu BH-TEST-OTHER-01 thuộc TT02, thao tác tại TT01 (TC-16)",
+    "expect": "Báo lỗi phiếu không khớp trung tâm",
+    "observed": [
+      "Phiếu bảo hành BH-TEST-OTHER-01 thuộc trung tâm #2, không khớp với trung tâm #1 đang thao tác. 🔄 Thử lại ×"
+    ]
+  },
+  {
+    "id": "UI-07-M2-KTV-khong-duoc-nhap",
+    "title": "M2 – Vai trò KTV mở màn hình nhập kho (phân quyền, TC-14)",
+    "expect": "Nút Xác nhận Nhập kho bị khóa, có nhắc chỉ QLTT được nhập",
+    "observed": [
+      "Lưu ý phân quyền: Nghiệp vụ nhập kho yêu cầu vai trò Quản lý trung tâm (QLTT). Bạn đang ở chế độ xem KTV, hãy chuyển vai trò ở góc trên để thực hiện thao tác."
+    ]
+  },
+  {
+    "id": "UI-08-M1-dat-nguong",
+    "title": "M1 – QLTT đặt ngưỡng 30 cho MH-SS-01 (US5, TC-04/05)",
+    "expect": "Thông báo cập nhật ngưỡng thành công; MH-SS-01 chuyển sang trạng thái dưới ngưỡng",
+    "observed": [
+      "Đã cập nhật ngưỡng cảnh báo cho linh kiện MH-SS-01 thành 30. ×"
+    ]
+  },
+  {
+    "id": "UI-09-M1-loc-duoi-nguong",
+    "title": "M1 – Lọc linh kiện dưới ngưỡng cảnh báo (US4, QT-09)",
+    "expect": "Chỉ hiển thị linh kiện có tồn < ngưỡng, đánh dấu cảnh báo",
+    "observed": []
+  },
+  {
+    "id": "UI-10-M3-tra-cuu-theo-phieu",
+    "title": "M3 – Tra cứu linh kiện đã xuất cho phiếu BH-TEST-ACTIVE-01 (US7)",
+    "expect": "Bảng liệt kê giao dịch xuất của phiếu, gồm giao dịch vừa xuất ở UI-02",
+    "observed": []
+  }
+]

@@ -101,3 +101,24 @@
 3. **Lưu ý về dữ liệu mẫu (Test Fixtures) và tính tái lập (Reproducibility):**
    - Các mã phiếu bảo hành `BH-TEST-ACTIVE-01`, `BH-TEST-ACTIVE-02`, `BH-TEST-ACTIVE-03`, `BH-TEST-INVALID-01`, `BH-TEST-OTHER-01` (được sinh từ `ticket_id >= 7801` trong `seed.js`) là các fixture được tạo riêng cho kiểm thử tự động, không phải là dữ liệu phiếu thực tế của khách hàng trong vận hành.
    - Do các ca kiểm thử xuất kho (TC-02 đến TC-05) làm giảm số tồn thực tế trên các linh kiện mẫu này, để đảm bảo tính độc lập và khả năng tái lập 100% khi chạy lại bộ test suite nhiều lần, kịch bản kiểm thử tự động (`scratch/run_official_18_suite.js`) chủ động đưa các dòng tồn kho mẫu về số dư định danh ban đầu trước khi thực thi.
+
+---
+
+## 5. Kiểm thử qua giao diện web (chạy thật trên Docker, 13/11/2026)
+
+Bổ sung cho 18 ca API ở mục 3: thao tác **trực tiếp trên giao diện** `http://localhost:8088` (stack `docker compose up -d --build`, dữ liệu do `db-init` nạp) bằng trình duyệt Microsoft Edge được điều khiển tự động (Playwright): chọn vai trò/trung tâm trên thanh đầu trang, nhập form, bấm nút, rồi chụp toàn trang. Cột "Kết quả thực tế" là nguyên văn thông báo hiện trên giao diện (log: `docs/evidence/bt3/11-ui-test-results.json`).
+
+| Mã | Thao tác | Kết quả mong đợi | Kết quả thực tế (thông báo trên giao diện) | PASS/FAIL |
+|:---:|:---|:---|:---|:---:|
+| [UI-01](./screenshots/UI-01-M2-nhap-kho-thanh-cong.png) | M2 – QLTT TT01 nhập 5 linh kiện MH-SS-01 (TC-01) | Thông báo nhập kho thành công, tồn tăng 5, giao dịch NHAP xuất hiện trong lịch sử | ✓ Ghi nhận nhập kho thành công! Mã giao dịch #4955. Số lượng nhập: +5. Tồn kho mới: 21. | **PASS** |
+| [UI-02](./screenshots/UI-02-M3-xuat-kho-thanh-cong.png) | M3 – KTV TT01 xuất 2 MH-SS-02 cho phiếu BH-TEST-ACTIVE-01 (TC-02) | Thông báo xuất kho thành công, tồn giảm 2 | ✓ Xuất kho thành công cho phiếu [BH-TEST-ACTIVE-01]! Mã GD: #4956. Số lượng xuất: -2. Tồn còn lại: 8. | **PASS** |
+| [UI-03](./screenshots/UI-03-M3-phieu-da-dong.png) | M3 – Xuất kho cho phiếu đã đóng BH-TEST-INVALID-01 (TC-09) | Báo lỗi phiếu ở trạng thái DA_DONG, không cho xuất | Phiếu bảo hành BH-TEST-INVALID-01 đang ở trạng thái 'DA_DONG', không thuộc diện được phép xuất linh kiện. | **PASS** |
+| [UI-04](./screenshots/UI-04-M3-xuat-vuot-ton.png) | M3 – Xuất 9999 chiếc, vượt tồn kho (TC-10, QT-09) | Báo lỗi tồn kho không đủ, hiển thị tồn khả dụng | Số lượng tồn kho không đủ để xuất. Tồn hiện tại: 8, yêu cầu xuất: 9999. | **PASS** |
+| [UI-05](./screenshots/UI-05-M3-phieu-khong-ton-tai.png) | M3 – Mã phiếu không tồn tại (TC-15) | Báo lỗi không tìm thấy phiếu bảo hành | Không tìm thấy phiếu bảo hành với mã BH-KHONG-TON-TAI-9999 trong hệ thống. | **PASS** |
+| [UI-06](./screenshots/UI-06-M3-phieu-khac-trung-tam.png) | M3 – Phiếu BH-TEST-OTHER-01 thuộc TT02, thao tác tại TT01 (TC-16) | Báo lỗi phiếu không khớp trung tâm | Phiếu bảo hành BH-TEST-OTHER-01 thuộc trung tâm #2, không khớp với trung tâm #1 đang thao tác. | **PASS** |
+| [UI-07](./screenshots/UI-07-M2-KTV-khong-duoc-nhap.png) | M2 – Vai trò KTV mở màn hình nhập kho (phân quyền, TC-14) | Nút Xác nhận Nhập kho bị khóa, có nhắc chỉ QLTT được nhập | Lưu ý phân quyền: Nghiệp vụ nhập kho yêu cầu vai trò Quản lý trung tâm (QLTT). Bạn đang ở chế độ xem KTV, hãy chuyển vai trò ở góc trên để thực hiện thao tác. | **PASS** |
+| [UI-08](./screenshots/UI-08-M1-dat-nguong.png) | M1 – QLTT đặt ngưỡng 30 cho MH-SS-01 (US5, TC-04/05) | Thông báo cập nhật ngưỡng thành công; MH-SS-01 chuyển sang trạng thái dưới ngưỡng | Đã cập nhật ngưỡng cảnh báo cho linh kiện MH-SS-01 thành 30. | **PASS** |
+| [UI-09](./screenshots/UI-09-M1-loc-duoi-nguong.png) | M1 – Lọc linh kiện dưới ngưỡng cảnh báo (US4, QT-09) | Chỉ hiển thị linh kiện có tồn < ngưỡng, đánh dấu cảnh báo | (kết quả dạng bảng — xem ảnh) | **PASS** |
+| [UI-10](./screenshots/UI-10-M3-tra-cuu-theo-phieu.png) | M3 – Tra cứu linh kiện đã xuất cho phiếu BH-TEST-ACTIVE-01 (US7) | Bảng liệt kê giao dịch xuất của phiếu, gồm giao dịch vừa xuất ở UI-02 | (kết quả dạng bảng — xem ảnh) | **PASS** |
+
+**Phát hiện thêm khi kiểm thử giao diện (chưa sửa, mức Trivial):** ở màn hình M3, ô "Tra cứu linh kiện đã xuất cho phiếu" được điền sẵn `BH-TEST-ACTIVE-01` (`StockIssueScreen.jsx` dòng 16) nên trước khi người dùng bấm tra cứu, màn hình đã hiện "Chưa có linh kiện nào được xuất cho phiếu BH-TEST-ACTIVE-01" dù phiếu này có giao dịch (thấy ở ảnh `UI-04`; khi bấm tra cứu thật thì hiện đúng — ảnh `UI-10`). Không sai dữ liệu, chỉ gây hiểu nhầm; hướng sửa: chỉ hiện thông báo rỗng sau khi đã tra cứu.
