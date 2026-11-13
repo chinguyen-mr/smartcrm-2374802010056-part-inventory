@@ -1,0 +1,839 @@
+[
+  {
+    "label": "hello",
+    "method": "GET",
+    "path": "/api/hello",
+    "status": 200,
+    "response": {
+      "message": "Hello Smart CRM - Luồng L5 Kho linh kiện thay thế",
+      "status": "online"
+    }
+  },
+  {
+    "label": "health",
+    "method": "GET",
+    "path": "/api/health",
+    "status": 200,
+    "response": {
+      "status": "UP",
+      "database": "CONNECTED",
+      "timestamp": "2026-11-13T07:09:01.061Z"
+    }
+  },
+  {
+    "label": "db-test",
+    "method": "GET",
+    "path": "/api/db-test",
+    "status": 200,
+    "response": {
+      "message": "Database connected successfully!",
+      "time": "2026-11-13T07:09:01.067Z"
+    }
+  },
+  {
+    "label": "token-ktv",
+    "method": "POST",
+    "path": "/api/auth/token",
+    "body": {
+      "role": "KTV",
+      "center_id": 1,
+      "username": "ktv_tt01"
+    },
+    "status": 200,
+    "response": {
+      "message": "Sinh token kiểm thử thành công",
+      "token": "<redacted JWT>",
+      "user": {
+        "username": "ktv_tt01",
+        "role": "KTV",
+        "centerId": 1
+      }
+    }
+  },
+  {
+    "label": "token-qltt",
+    "method": "POST",
+    "path": "/api/auth/token",
+    "body": {
+      "role": "QUAN_LY_TRUNG_TAM",
+      "center_id": 1,
+      "username": "qltt_tt01"
+    },
+    "status": 200,
+    "response": {
+      "message": "Sinh token kiểm thử thành công",
+      "token": "<redacted JWT>",
+      "user": {
+        "username": "qltt_tt01",
+        "role": "QUAN_LY_TRUNG_TAM",
+        "centerId": 1
+      }
+    }
+  },
+  {
+    "label": "parts-list",
+    "method": "GET",
+    "path": "/api/parts?center_id=1&q=pin&size=2",
+    "status": 200,
+    "response": {
+      "items": [
+        {
+          "part_id": "19",
+          "part_code": "PIN-SS-01",
+          "part_name": "Pin Samsung loại 1",
+          "unit_price": "1450000.00",
+          "center_id": "1",
+          "quantity": 0,
+          "min_threshold": 0,
+          "is_below_threshold": false,
+          "updated_at": null
+        },
+        {
+          "part_id": "20",
+          "part_code": "PIN-SS-02",
+          "part_name": "Pin Samsung loại 2",
+          "unit_price": "650000.00",
+          "center_id": "1",
+          "quantity": 30,
+          "min_threshold": 5,
+          "is_below_threshold": false,
+          "updated_at": "2026-11-13T07:04:37.345Z"
+        }
+      ],
+      "page": 1,
+      "size": 2,
+      "total": 18
+    }
+  },
+  {
+    "label": "parts-list-401",
+    "method": "GET",
+    "path": "/api/parts?center_id=1",
+    "status": 401,
+    "response": {
+      "error": "UNAUTHENTICATED",
+      "message": "Yêu cầu chưa được xác thực. Vui lòng cung cấp JWT token hợp lệ.",
+      "fields": {}
+    }
+  },
+  {
+    "label": "parts-list-badtoken",
+    "method": "GET",
+    "path": "/api/parts?center_id=1",
+    "status": 401,
+    "response": {
+      "error": "INVALID_TOKEN",
+      "message": "Token xác thực không hợp lệ hoặc đã hết hạn.",
+      "fields": {}
+    }
+  },
+  {
+    "label": "parts-list-403",
+    "method": "GET",
+    "path": "/api/parts?center_id=2",
+    "status": 403,
+    "response": {
+      "error": "FORBIDDEN",
+      "message": "Không có quyền truy cập dữ liệu của trung tâm #2. Người dùng thuộc trung tâm #1.",
+      "fields": {
+        "required_center_id": 2,
+        "user_center_id": 1
+      },
+      "details": {
+        "required_center_id": 2,
+        "user_center_id": 1
+      }
+    }
+  },
+  {
+    "label": "part-get",
+    "method": "GET",
+    "path": "/api/parts/1",
+    "status": 200,
+    "response": {
+      "data": {
+        "part_id": "1",
+        "part_code": "MH-SS-01",
+        "part_name": "Màn hình Samsung loại 1",
+        "unit_price": "2200000.00"
+      }
+    }
+  },
+  {
+    "label": "part-get-404",
+    "method": "GET",
+    "path": "/api/parts/99999",
+    "status": 404,
+    "response": {
+      "error": "PART_NOT_FOUND",
+      "message": "Không tìm thấy linh kiện với mã #99999.",
+      "fields": {
+        "part_id": 99999
+      },
+      "details": {
+        "part_id": 99999
+      }
+    }
+  },
+  {
+    "label": "part-create",
+    "method": "POST",
+    "path": "/api/parts",
+    "body": {
+      "part_code": "DOC-DEMO-01",
+      "part_name": "Linh kien demo API docs",
+      "unit_price": 150000
+    },
+    "status": 201,
+    "response": {
+      "message": "Thêm linh kiện thành công.",
+      "data": {
+        "part_id": "181",
+        "part_code": "DOC-DEMO-01",
+        "part_name": "Linh kien demo API docs",
+        "unit_price": "150000.00"
+      }
+    }
+  },
+  {
+    "label": "part-create-409",
+    "method": "POST",
+    "path": "/api/parts",
+    "body": {
+      "part_code": "DOC-DEMO-01",
+      "part_name": "Trung ma",
+      "unit_price": 1
+    },
+    "status": 409,
+    "response": {
+      "error": "DUPLICATE_PART_CODE",
+      "message": "Mã linh kiện 'DOC-DEMO-01' đã tồn tại trong hệ thống.",
+      "fields": {
+        "part_code": "DOC-DEMO-01"
+      },
+      "details": {
+        "part_code": "DOC-DEMO-01"
+      }
+    }
+  },
+  {
+    "label": "part-create-400",
+    "method": "POST",
+    "path": "/api/parts",
+    "body": {
+      "part_code": "",
+      "part_name": "Thieu ma",
+      "unit_price": 1
+    },
+    "status": 400,
+    "response": {
+      "error": "DU_LIEU_KHONG_HOP_LE",
+      "message": "Mã linh kiện là bắt buộc.",
+      "fields": {
+        "field": "part_code"
+      },
+      "details": {
+        "field": "part_code"
+      }
+    }
+  },
+  {
+    "label": "part-create-403",
+    "method": "POST",
+    "path": "/api/parts",
+    "body": {
+      "part_code": "DOC-DEMO-02",
+      "part_name": "KTV tao",
+      "unit_price": 1
+    },
+    "status": 403,
+    "response": {
+      "error": "FORBIDDEN",
+      "message": "Người dùng với vai trò KTV không có quyền thực hiện thao tác này.",
+      "fields": {}
+    }
+  },
+  {
+    "label": "part-update",
+    "method": "PUT",
+    "path": "/api/parts/181",
+    "body": {
+      "part_name": "Linh kien demo API docs (sua)",
+      "unit_price": 175000
+    },
+    "status": 200,
+    "response": {
+      "message": "Cập nhật linh kiện thành công.",
+      "data": {
+        "part_id": "181",
+        "part_code": "DOC-DEMO-01",
+        "part_name": "Linh kien demo API docs (sua)",
+        "unit_price": "175000.00"
+      }
+    }
+  },
+  {
+    "label": "part-update-400",
+    "method": "PUT",
+    "path": "/api/parts/181",
+    "body": {
+      "unit_price": -1
+    },
+    "status": 400,
+    "response": {
+      "error": "DU_LIEU_KHONG_HOP_LE",
+      "message": "Đơn giá phải là số không âm.",
+      "fields": {
+        "field": "unit_price"
+      },
+      "details": {
+        "field": "unit_price"
+      }
+    }
+  },
+  {
+    "label": "part-delete",
+    "method": "DELETE",
+    "path": "/api/parts/181",
+    "status": 200,
+    "response": {
+      "message": "Đã xóa linh kiện #181 thành công."
+    }
+  },
+  {
+    "label": "part-delete-409",
+    "method": "DELETE",
+    "path": "/api/parts/1",
+    "status": 409,
+    "response": {
+      "error": "CANNOT_DELETE_REFERENCED_PART",
+      "message": "Không thể xóa linh kiện đã phát sinh giao dịch nhập/xuất trong lịch sử để bảo toàn dữ liệu.",
+      "fields": {
+        "part_id": 1,
+        "transaction_count": "38"
+      },
+      "details": {
+        "part_id": 1,
+        "transaction_count": "38"
+      }
+    }
+  },
+  {
+    "label": "receipt",
+    "method": "POST",
+    "path": "/api/stock/receipts",
+    "body": {
+      "center_id": 1,
+      "part_id": 1,
+      "quantity": 5,
+      "reference": "PN-DOC-0001"
+    },
+    "status": 201,
+    "response": {
+      "message": "Ghi nhận nhập kho thành công.",
+      "data": {
+        "transaction_id": 4955,
+        "type": "NHAP",
+        "center_id": 1,
+        "part_id": 1,
+        "part_code": "MH-SS-01",
+        "part_name": "Màn hình Samsung loại 1",
+        "quantity": 5,
+        "new_quantity": 21,
+        "occurred_at": "2026-11-13T07:09:01.184Z",
+        "reference": "PN-DOC-0001"
+      }
+    }
+  },
+  {
+    "label": "receipt-400",
+    "method": "POST",
+    "path": "/api/stock/receipts",
+    "body": {
+      "center_id": 1,
+      "part_id": 1,
+      "quantity": -5
+    },
+    "status": 400,
+    "response": {
+      "error": "DU_LIEU_KHONG_HOP_LE",
+      "message": "Dữ liệu nhập kho không đúng định dạng.",
+      "fields": {
+        "quantity": "Số lượng nhập phải là số nguyên lớn hơn 0 và không vượt quá 2147483647."
+      },
+      "details": [
+        {
+          "field": "quantity",
+          "reason": "Số lượng nhập phải là số nguyên lớn hơn 0 và không vượt quá 2147483647."
+        }
+      ]
+    }
+  },
+  {
+    "label": "receipt-403-role",
+    "method": "POST",
+    "path": "/api/stock/receipts",
+    "body": {
+      "center_id": 1,
+      "part_id": 1,
+      "quantity": 1
+    },
+    "status": 403,
+    "response": {
+      "error": "FORBIDDEN",
+      "message": "Người dùng với vai trò KTV không có quyền thực hiện thao tác này.",
+      "fields": {}
+    }
+  },
+  {
+    "label": "receipt-404",
+    "method": "POST",
+    "path": "/api/stock/receipts",
+    "body": {
+      "center_id": 1,
+      "part_id": 99999,
+      "quantity": 1
+    },
+    "status": 404,
+    "response": {
+      "error": "PART_NOT_FOUND",
+      "message": "Linh kiện với mã #99999 không tồn tại trong danh mục.",
+      "fields": {
+        "part_id": 99999
+      },
+      "details": {
+        "part_id": 99999
+      }
+    }
+  },
+  {
+    "label": "issue",
+    "method": "POST",
+    "path": "/api/stock/issues",
+    "body": {
+      "center_id": 1,
+      "part_id": 2,
+      "ticket_code": "BH-TEST-ACTIVE-01",
+      "quantity": 1
+    },
+    "status": 201,
+    "response": {
+      "message": "Xuất kho linh kiện thành công.",
+      "data": {
+        "transaction_id": 4956,
+        "type": "XUAT",
+        "center_id": 1,
+        "part_id": 2,
+        "part_code": "MH-SS-02",
+        "part_name": "Màn hình Samsung loại 2",
+        "ticket_code": "BH-TEST-ACTIVE-01",
+        "ticket_id": 7801,
+        "quantity": 1,
+        "new_quantity": 9,
+        "min_threshold": 3,
+        "is_below_threshold": false,
+        "occurred_at": "2026-11-13T07:09:01.205Z"
+      }
+    }
+  },
+  {
+    "label": "issue-409-stock",
+    "method": "POST",
+    "path": "/api/stock/issues",
+    "body": {
+      "center_id": 1,
+      "part_id": 2,
+      "ticket_code": "BH-TEST-ACTIVE-01",
+      "quantity": 100000
+    },
+    "status": 409,
+    "response": {
+      "error": "INSUFFICIENT_STOCK",
+      "message": "Số lượng tồn kho không đủ để xuất. Tồn hiện tại: 9, yêu cầu xuất: 100000.",
+      "fields": {
+        "part_id": 2,
+        "part_code": "MH-SS-02",
+        "available_quantity": 9,
+        "requested_quantity": 100000
+      },
+      "details": {
+        "part_id": 2,
+        "part_code": "MH-SS-02",
+        "available_quantity": 9,
+        "requested_quantity": 100000
+      }
+    }
+  },
+  {
+    "label": "issue-409-status",
+    "method": "POST",
+    "path": "/api/stock/issues",
+    "body": {
+      "center_id": 1,
+      "part_id": 2,
+      "ticket_code": "BH-TEST-INVALID-01",
+      "quantity": 1
+    },
+    "status": 409,
+    "response": {
+      "error": "TICKET_STATUS_NOT_ELIGIBLE",
+      "message": "Phiếu bảo hành BH-TEST-INVALID-01 đang ở trạng thái 'DA_DONG', không thuộc diện được phép xuất linh kiện.",
+      "fields": {
+        "current_status": "DA_DONG",
+        "allowed_statuses": [
+          "DA_PHAN_CONG",
+          "DANG_XU_LY",
+          "CHO_LINH_KIEN"
+        ]
+      },
+      "details": {
+        "current_status": "DA_DONG",
+        "allowed_statuses": [
+          "DA_PHAN_CONG",
+          "DANG_XU_LY",
+          "CHO_LINH_KIEN"
+        ]
+      }
+    }
+  },
+  {
+    "label": "issue-409-center",
+    "method": "POST",
+    "path": "/api/stock/issues",
+    "body": {
+      "center_id": 1,
+      "part_id": 2,
+      "ticket_code": "BH-TEST-OTHER-01",
+      "quantity": 1
+    },
+    "status": 409,
+    "response": {
+      "error": "TICKET_CENTER_MISMATCH",
+      "message": "Phiếu bảo hành BH-TEST-OTHER-01 thuộc trung tâm #2, không khớp với trung tâm #1 đang thao tác.",
+      "fields": {
+        "ticket_center_id": "2",
+        "current_center_id": 1
+      },
+      "details": {
+        "ticket_center_id": "2",
+        "current_center_id": 1
+      }
+    }
+  },
+  {
+    "label": "issue-404-ticket",
+    "method": "POST",
+    "path": "/api/stock/issues",
+    "body": {
+      "center_id": 1,
+      "part_id": 2,
+      "ticket_code": "BH-KHONG-TON-TAI",
+      "quantity": 1
+    },
+    "status": 404,
+    "response": {
+      "error": "TICKET_NOT_FOUND",
+      "message": "Không tìm thấy phiếu bảo hành với mã BH-KHONG-TON-TAI trong hệ thống.",
+      "fields": {
+        "ticket_code": "BH-KHONG-TON-TAI"
+      },
+      "details": {
+        "ticket_code": "BH-KHONG-TON-TAI"
+      }
+    }
+  },
+  {
+    "label": "issue-403-center",
+    "method": "POST",
+    "path": "/api/stock/issues",
+    "body": {
+      "center_id": 2,
+      "part_id": 2,
+      "ticket_code": "BH-TEST-OTHER-01",
+      "quantity": 1
+    },
+    "status": 403,
+    "response": {
+      "error": "FORBIDDEN",
+      "message": "Không có quyền thao tác trên trung tâm #2. Người dùng thuộc trung tâm #1.",
+      "fields": {
+        "required_center_id": 2,
+        "user_center_id": 1
+      },
+      "details": {
+        "required_center_id": 2,
+        "user_center_id": 1
+      }
+    }
+  },
+  {
+    "label": "issue-400",
+    "method": "POST",
+    "path": "/api/stock/issues",
+    "body": {
+      "center_id": 1,
+      "part_id": 2,
+      "quantity": 0
+    },
+    "status": 400,
+    "response": {
+      "error": "DU_LIEU_KHONG_HOP_LE",
+      "message": "Dữ liệu xuất kho không đúng định dạng.",
+      "fields": {
+        "ticket_code": "Mã phiếu bảo hành là bắt buộc.",
+        "quantity": "Số lượng xuất phải là số nguyên lớn hơn 0 và không vượt quá 2147483647."
+      },
+      "details": [
+        {
+          "field": "ticket_code",
+          "reason": "Mã phiếu bảo hành là bắt buộc."
+        },
+        {
+          "field": "quantity",
+          "reason": "Số lượng xuất phải là số nguyên lớn hơn 0 và không vượt quá 2147483647."
+        }
+      ]
+    }
+  },
+  {
+    "label": "alerts",
+    "method": "GET",
+    "path": "/api/stock/alerts?center_id=1&size=2",
+    "status": 200,
+    "response": {
+      "items": [
+        {
+          "part_id": "27",
+          "part_code": "PIN-OP-03",
+          "part_name": "Pin OPPO loại 3",
+          "unit_price": "650000.00",
+          "center_id": "1",
+          "quantity": 0,
+          "min_threshold": 5,
+          "is_below_threshold": true,
+          "updated_at": "2026-11-13T07:04:37.345Z"
+        },
+        {
+          "part_id": "30",
+          "part_code": "PIN-RM-03",
+          "part_name": "Pin realme loại 3",
+          "unit_price": "420000.00",
+          "center_id": "1",
+          "quantity": 0,
+          "min_threshold": 3,
+          "is_below_threshold": true,
+          "updated_at": "2026-11-13T07:04:37.345Z"
+        }
+      ],
+      "page": 1,
+      "size": 2,
+      "total": 20
+    }
+  },
+  {
+    "label": "threshold",
+    "method": "PUT",
+    "path": "/api/stock/thresholds",
+    "body": {
+      "center_id": 1,
+      "part_id": 2,
+      "min_threshold": 12
+    },
+    "status": 200,
+    "response": {
+      "message": "Cập nhật ngưỡng cảnh báo thành công.",
+      "data": {
+        "center_id": 1,
+        "part_id": 2,
+        "part_code": "MH-SS-02",
+        "part_name": "Màn hình Samsung loại 2",
+        "quantity": 9,
+        "min_threshold": 12,
+        "is_below_threshold": true,
+        "updated_at": "2026-11-13T07:09:01.250Z"
+      }
+    }
+  },
+  {
+    "label": "threshold-403",
+    "method": "PUT",
+    "path": "/api/stock/thresholds",
+    "body": {
+      "center_id": 1,
+      "part_id": 2,
+      "min_threshold": 12
+    },
+    "status": 403,
+    "response": {
+      "error": "FORBIDDEN",
+      "message": "Người dùng với vai trò KTV không có quyền thực hiện thao tác này.",
+      "fields": {}
+    }
+  },
+  {
+    "label": "threshold-400",
+    "method": "PUT",
+    "path": "/api/stock/thresholds",
+    "body": {
+      "center_id": 1,
+      "part_id": 2,
+      "min_threshold": -1
+    },
+    "status": 400,
+    "response": {
+      "error": "DU_LIEU_KHONG_HOP_LE",
+      "message": "Dữ liệu cấu hình ngưỡng cảnh báo không hợp lệ.",
+      "fields": {
+        "min_threshold": "Ngưỡng cảnh báo phải là số nguyên không âm (>= 0) và không vượt quá 2147483647."
+      },
+      "details": [
+        {
+          "field": "min_threshold",
+          "reason": "Ngưỡng cảnh báo phải là số nguyên không âm (>= 0) và không vượt quá 2147483647."
+        }
+      ]
+    }
+  },
+  {
+    "label": "transactions",
+    "method": "GET",
+    "path": "/api/stock/transactions?center_id=1&type=XUAT&size=2",
+    "status": 200,
+    "response": {
+      "items": [
+        {
+          "transaction_id": "4956",
+          "center_id": "1",
+          "part_id": "2",
+          "part_code": "MH-SS-02",
+          "part_name": "Màn hình Samsung loại 2",
+          "ticket_part_id": "4064",
+          "ticket_code": "BH-TEST-ACTIVE-01",
+          "type": "XUAT",
+          "quantity": 1,
+          "occurred_at": "2026-11-13T07:09:01.205Z",
+          "reference": "BH-TEST-ACTIVE-01"
+        },
+        {
+          "transaction_id": "4953",
+          "center_id": "1",
+          "part_id": "111",
+          "part_code": "NN-SS-03",
+          "part_name": "Nút nguồn Samsung loại 3",
+          "ticket_part_id": "4062",
+          "ticket_code": "BH-005865/2026",
+          "type": "XUAT",
+          "quantity": 2,
+          "occurred_at": "2026-08-31T00:00:00.000Z",
+          "reference": "BH-005865/2026"
+        }
+      ],
+      "page": 1,
+      "size": 2,
+      "total": 714
+    }
+  },
+  {
+    "label": "ticket-parts",
+    "method": "GET",
+    "path": "/api/tickets/BH-TEST-ACTIVE-01/parts?center_id=1",
+    "status": 200,
+    "response": {
+      "ticket_code": "BH-TEST-ACTIVE-01",
+      "center_id": 1,
+      "total_items": 1,
+      "items": [
+        {
+          "transaction_id": "4956",
+          "center_id": "1",
+          "part_id": "2",
+          "part_code": "MH-SS-02",
+          "part_name": "Màn hình Samsung loại 2",
+          "unit_price": "150000.00",
+          "quantity": 1,
+          "occurred_at": "2026-11-13T07:09:01.205Z",
+          "ticket_code": "BH-TEST-ACTIVE-01"
+        }
+      ]
+    }
+  },
+  {
+    "label": "ticket-parts-404",
+    "method": "GET",
+    "path": "/api/tickets/BH-KHONG-TON-TAI/parts?center_id=1",
+    "status": 200,
+    "response": {
+      "ticket_code": "BH-KHONG-TON-TAI",
+      "center_id": 1,
+      "total_items": 0,
+      "items": []
+    }
+  },
+  {
+    "label": "nobody-400",
+    "method": "POST",
+    "path": "/api/stock/receipts",
+    "status": 400,
+    "response": {
+      "error": "DU_LIEU_KHONG_HOP_LE",
+      "message": "Dữ liệu nhập kho không đúng định dạng.",
+      "fields": {
+        "center_id": "Mã trung tâm phải là số nguyên dương hợp lệ.",
+        "part_id": "Mã linh kiện phải là số nguyên dương hợp lệ.",
+        "quantity": "Số lượng nhập phải là số nguyên lớn hơn 0 và không vượt quá 2147483647."
+      },
+      "details": [
+        {
+          "field": "center_id",
+          "reason": "Mã trung tâm phải là số nguyên dương hợp lệ."
+        },
+        {
+          "field": "part_id",
+          "reason": "Mã linh kiện phải là số nguyên dương hợp lệ."
+        },
+        {
+          "field": "quantity",
+          "reason": "Số lượng nhập phải là số nguyên lớn hơn 0 và không vượt quá 2147483647."
+        }
+      ]
+    }
+  },
+  {
+    "label": "part-get-400",
+    "method": "GET",
+    "path": "/api/parts/abc",
+    "status": 400,
+    "response": {
+      "error": "DU_LIEU_KHONG_HOP_LE",
+      "message": "Tham số id phải là số nguyên dương.",
+      "fields": {
+        "id": "Phải là số nguyên dương."
+      },
+      "details": [
+        {
+          "field": "id",
+          "reason": "Phải là số nguyên dương."
+        }
+      ]
+    }
+  },
+  {
+    "label": "transactions-400",
+    "method": "GET",
+    "path": "/api/stock/transactions?center_id=1&from=khong-phai-ngay",
+    "status": 400,
+    "response": {
+      "error": "DU_LIEU_KHONG_HOP_LE",
+      "message": "Tham số from phải là ngày hợp lệ dạng YYYY-MM-DD.",
+      "fields": {
+        "from": "Định dạng YYYY-MM-DD."
+      },
+      "details": [
+        {
+          "field": "from",
+          "reason": "Định dạng YYYY-MM-DD."
+        }
+      ]
+    }
+  }
+]

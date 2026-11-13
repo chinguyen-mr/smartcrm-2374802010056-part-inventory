@@ -1,0 +1,15 @@
+$ docker run --rm smartcrm-backend:a51da68 ls /app
+node_modules
+package-lock.json
+package.json
+scripts
+server.js
+src
+$ docker run --rm smartcrm-backend:a51da68 ls /sql /data/sample
+ls: /sql: No such file or directory
+ls: /data/sample: No such file or directory
+$ docker run --rm smartcrm-backend:a51da68 npm test
+
+> backend@1.0.0 test
+> node --test tests/**/*.test.js
+

@@ -1,0 +1,229 @@
+$ docker compose exec backend npm test
+
+> backend@1.0.0 test
+> node --test tests/**/*.test.js
+
+TAP version 13
+# ◇ injected env (0) from ../.env
+# ◇ injected env (0) from ../.env
+# Subtest: 4. Integration Test - Toàn trình API với CSDL PostgreSQL thật - Luồng L5
+    # Subtest: Khởi động server test nội bộ và lấy Token xác thực cho 2 vai trò
+    ok 1 - Khởi động server test nội bộ và lấy Token xác thực cho 2 vai trò
+      ---
+      duration_ms: 72.866235
+      ...
+# PostgreSQL connected successfully!
+    # Subtest: API-IT-01: GET /api/parts - Tra cứu danh mục và tồn kho thành công
+    ok 2 - API-IT-01: GET /api/parts - Tra cứu danh mục và tồn kho thành công
+      ---
+      duration_ms: 28.27856
+      ...
+    # Subtest: API-IT-02: POST /api/stock/receipts - Quản lý trung tâm nhập kho thành công
+    ok 3 - API-IT-02: POST /api/stock/receipts - Quản lý trung tâm nhập kho thành công
+      ---
+      duration_ms: 18.641143
+      ...
+    # Subtest: API-IT-03: POST /api/stock/issues - KTV xuất kho linh kiện theo phiếu thành công
+    ok 4 - API-IT-03: POST /api/stock/issues - KTV xuất kho linh kiện theo phiếu thành công
+      ---
+      duration_ms: 18.88356
+      ...
+    # Subtest: API-IT-04: POST /api/stock/issues - Từ chối khi xuất cho phiếu đã đóng (DA_DONG)
+    ok 5 - API-IT-04: POST /api/stock/issues - Từ chối khi xuất cho phiếu đã đóng (DA_DONG)
+      ---
+      duration_ms: 11.598428
+      ...
+    # Subtest: API-IT-05: PUT /api/stock/thresholds - Thiết lập ngưỡng cảnh báo thành công
+    ok 6 - API-IT-05: PUT /api/stock/thresholds - Thiết lập ngưỡng cảnh báo thành công
+      ---
+      duration_ms: 12.135309
+      ...
+    # Subtest: API-IT-06: GET /api/stock/alerts - Lọc danh sách cảnh báo dưới ngưỡng thành công
+    ok 7 - API-IT-06: GET /api/stock/alerts - Lọc danh sách cảnh báo dưới ngưỡng thành công
+      ---
+      duration_ms: 7.069813
+      ...
+    # Subtest: API-IT-07: GET /api/stock/transactions - Xem lịch sử giao dịch kho
+    ok 8 - API-IT-07: GET /api/stock/transactions - Xem lịch sử giao dịch kho
+      ---
+      duration_ms: 10.981252
+      ...
+    # Subtest: API-IT-08: POST /api/stock/receipts không có body - trả 400, không phải 500 (BUG-08)
+    ok 9 - API-IT-08: POST /api/stock/receipts không có body - trả 400, không phải 500 (BUG-08)
+      ---
+      duration_ms: 4.726516
+      ...
+    # Subtest: API-IT-09: GET /api/parts/abc - id không phải số trả 400, không phải 500 (BUG-09)
+    ok 10 - API-IT-09: GET /api/parts/abc - id không phải số trả 400, không phải 500 (BUG-09)
+      ---
+      duration_ms: 4.794648
+      ...
+    # Subtest: API-IT-10: GET /api/stock/transactions?from=sai-ngay - trả 400, không phải 500 (BUG-09)
+    ok 11 - API-IT-10: GET /api/stock/transactions?from=sai-ngay - trả 400, không phải 500 (BUG-09)
+      ---
+      duration_ms: 5.247965
+      ...
+    # Subtest: Đóng server test tích hợp
+    ok 12 - Đóng server test tích hợp
+      ---
+      duration_ms: 1.662319
+      ...
+    1..12
+ok 1 - 4. Integration Test - Toàn trình API với CSDL PostgreSQL thật - Luồng L5
+  ---
+  duration_ms: 199.435731
+  type: 'suite'
+  ...
+# ◇ injected env (0) from ../.env
+# Subtest: 1. Unit Test - Nghiệp vụ Xuất kho (IssueService) - Luồng L5
+    # Subtest: TC01-Positive: Xuất kho thành công khi phiếu hợp lệ và tồn kho đủ (QT-09, QT-13)
+    ok 1 - TC01-Positive: Xuất kho thành công khi phiếu hợp lệ và tồn kho đủ (QT-09, QT-13)
+      ---
+      duration_ms: 2.401671
+      ...
+    # Subtest: TC02-Boundary: Xuất số lượng đúng bằng tồn kho hiện tại (tồn giảm về 0 hợp lệ)
+    ok 2 - TC02-Boundary: Xuất số lượng đúng bằng tồn kho hiện tại (tồn giảm về 0 hợp lệ)
+      ---
+      duration_ms: 0.584624
+      ...
+    # Subtest: TC03-Boundary: Tồn sau khi xuất bằng đúng ngưỡng (quantity == min_threshold) không cảnh báo (QT-09)
+    ok 3 - TC03-Boundary: Tồn sau khi xuất bằng đúng ngưỡng (quantity == min_threshold) không cảnh báo (QT-09)
+      ---
+      duration_ms: 0.510903
+      ...
+    # Subtest: TC04-Boundary: Tồn sau khi xuất nhỏ hơn ngưỡng (quantity < min_threshold) phát sinh cảnh báo (QT-09)
+    ok 4 - TC04-Boundary: Tồn sau khi xuất nhỏ hơn ngưỡng (quantity < min_threshold) phát sinh cảnh báo (QT-09)
+      ---
+      duration_ms: 0.565434
+      ...
+    # Subtest: TC05-Negative: Từ chối xuất khi số lượng yêu cầu vượt quá tồn kho hiện tại (QT-09)
+    ok 5 - TC05-Negative: Từ chối xuất khi số lượng yêu cầu vượt quá tồn kho hiện tại (QT-09)
+      ---
+      duration_ms: 1.488506
+      ...
+    # Subtest: TC06-Negative: Từ chối xuất khi số lượng không phải số nguyên dương
+    ok 6 - TC06-Negative: Từ chối xuất khi số lượng không phải số nguyên dương
+      ---
+      duration_ms: 0.908977
+      ...
+    # Subtest: TC07-Negative: Từ chối xuất khi người dùng truy cập trái phép trung tâm khác (QT-14)
+    ok 7 - TC07-Negative: Từ chối xuất khi người dùng truy cập trái phép trung tâm khác (QT-14)
+      ---
+      duration_ms: 0.50321
+      ...
+    # Subtest: TC08-Negative: Từ chối xuất khi phiếu bảo hành không tồn tại
+    ok 8 - TC08-Negative: Từ chối xuất khi phiếu bảo hành không tồn tại
+      ---
+      duration_ms: 0.526722
+      ...
+    # Subtest: TC09-Negative: Từ chối xuất khi phiếu thuộc trung tâm khác
+    ok 9 - TC09-Negative: Từ chối xuất khi phiếu thuộc trung tâm khác
+      ---
+      duration_ms: 0.768746
+      ...
+    # Subtest: TC10-Negative: Từ chối xuất khi trạng thái phiếu không nằm trong allowlist
+    ok 10 - TC10-Negative: Từ chối xuất khi trạng thái phiếu không nằm trong allowlist
+      ---
+      duration_ms: 0.554247
+      ...
+    1..10
+ok 2 - 1. Unit Test - Nghiệp vụ Xuất kho (IssueService) - Luồng L5
+  ---
+  duration_ms: 11.121128
+  type: 'suite'
+  ...
+# ◇ injected env (0) from ../.env
+# Subtest: 2. Unit Test - Nghiệp vụ Nhập kho (ReceiptService) - Luồng L5
+    # Subtest: TC11-Positive: Ghi nhận nhập kho thành công cho linh kiện đã có tồn kho (US3, UC3, FR5)
+    ok 1 - TC11-Positive: Ghi nhận nhập kho thành công cho linh kiện đã có tồn kho (US3, UC3, FR5)
+      ---
+      duration_ms: 1.612576
+      ...
+    # Subtest: TC12-Positive: Nhập kho tự động khởi tạo dòng tồn mới khi cặp trung tâm/linh kiện chưa có tồn (G5)
+    ok 2 - TC12-Positive: Nhập kho tự động khởi tạo dòng tồn mới khi cặp trung tâm/linh kiện chưa có tồn (G5)
+      ---
+      duration_ms: 0.365106
+      ...
+    # Subtest: TC13-Boundary: Nhập kho với số lượng tối thiểu là 1 thành công
+    ok 3 - TC13-Boundary: Nhập kho với số lượng tối thiểu là 1 thành công
+      ---
+      duration_ms: 0.426084
+      ...
+    # Subtest: TC14-Negative: Từ chối nhập kho khi số lượng <= 0
+    ok 4 - TC14-Negative: Từ chối nhập kho khi số lượng <= 0
+      ---
+      duration_ms: 1.137308
+      ...
+    # Subtest: TC14B-Negative: Từ chối nhập kho khi số lượng vượt quá giới hạn MAX_INTEGER (BUG-05)
+    ok 5 - TC14B-Negative: Từ chối nhập kho khi số lượng vượt quá giới hạn MAX_INTEGER (BUG-05)
+      ---
+      duration_ms: 0.294658
+      ...
+    # Subtest: TC14C-Negative: Từ chối nhập kho khi tổng tồn sau khi nhập vượt quá MAX_INTEGER (BUG-05 mở rộng)
+    ok 6 - TC14C-Negative: Từ chối nhập kho khi tổng tồn sau khi nhập vượt quá MAX_INTEGER (BUG-05 mở rộng)
+      ---
+      duration_ms: 0.407179
+      ...
+    # Subtest: TC15-Negative: Từ chối nhập kho khi linh kiện không tồn tại trong danh mục
+    ok 7 - TC15-Negative: Từ chối nhập kho khi linh kiện không tồn tại trong danh mục
+      ---
+      duration_ms: 0.405433
+      ...
+    # Subtest: TC16-Negative: Từ chối khi người dùng thao tác trung tâm ngoài quyền (QT-14)
+    ok 8 - TC16-Negative: Từ chối khi người dùng thao tác trung tâm ngoài quyền (QT-14)
+      ---
+      duration_ms: 0.313047
+      ...
+    1..8
+ok 3 - 2. Unit Test - Nghiệp vụ Nhập kho (ReceiptService) - Luồng L5
+  ---
+  duration_ms: 6.630299
+  type: 'suite'
+  ...
+# ◇ injected env (0) from ../.env
+# Subtest: 3. Unit Test - Nghiệp vụ Quản lý Ngưỡng & Tra cứu Tồn kho (StockService) - Luồng L5
+    # Subtest: TC17-Positive: Thiết lập ngưỡng cảnh báo thành công bởi Quản lý trung tâm (US5, UC6, FR8)
+    ok 1 - TC17-Positive: Thiết lập ngưỡng cảnh báo thành công bởi Quản lý trung tâm (US5, UC6, FR8)
+      ---
+      duration_ms: 1.373576
+      ...
+    # Subtest: TC18-Positive: Tra cứu danh sách linh kiện dưới ngưỡng cảnh báo (US4, UC5, FR7)
+    ok 2 - TC18-Positive: Tra cứu danh sách linh kiện dưới ngưỡng cảnh báo (US4, UC5, FR7)
+      ---
+      duration_ms: 0.448815
+      ...
+    # Subtest: TC19-Boundary: Thiết lập ngưỡng cảnh báo bằng 0 thành công (min_threshold = 0 không cảnh báo)
+    ok 3 - TC19-Boundary: Thiết lập ngưỡng cảnh báo bằng 0 thành công (min_threshold = 0 không cảnh báo)
+      ---
+      duration_ms: 0.358957
+      ...
+    # Subtest: TC20-Negative: Kỹ thuật viên (KTV) không có quyền thiết lập ngưỡng cảnh báo (FORBIDDEN)
+    ok 4 - TC20-Negative: Kỹ thuật viên (KTV) không có quyền thiết lập ngưỡng cảnh báo (FORBIDDEN)
+      ---
+      duration_ms: 1.35973
+      ...
+    # Subtest: TC21-Negative: Từ chối thiết lập ngưỡng cảnh báo là số âm
+    ok 5 - TC21-Negative: Từ chối thiết lập ngưỡng cảnh báo là số âm
+      ---
+      duration_ms: 0.397344
+      ...
+    # Subtest: TC22-Negative: Từ chối tra cứu tồn kho trung tâm ngoài phân quyền (QT-14)
+    ok 6 - TC22-Negative: Từ chối tra cứu tồn kho trung tâm ngoài phân quyền (QT-14)
+      ---
+      duration_ms: 0.292599
+      ...
+    1..6
+ok 4 - 3. Unit Test - Nghiệp vụ Quản lý Ngưỡng & Tra cứu Tồn kho (StockService) - Luồng L5
+  ---
+  duration_ms: 5.698975
+  type: 'suite'
+  ...
+1..4
+# tests 36
+# suites 4
+# pass 36
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10411.47432

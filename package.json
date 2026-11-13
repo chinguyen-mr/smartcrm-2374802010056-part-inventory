@@ -1,6 +1,6 @@
 {
   "name": "smartcrm-2374802010056-part-inventory",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Smart CRM — Quản lý kho linh kiện thay thế (Luồng L5) - Bài tập 2",
   "scripts": {
     "start": "npm --prefix src/backend start",

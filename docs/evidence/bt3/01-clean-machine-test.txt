@@ -1,0 +1,37 @@
+$ git clone --branch main <repo> .   (empty dir: C:\Users\ASUS\AppData\Local\Temp\claude\bdfd99b013169f7e\6fefd612-e457-5013-ba83-e973d29533b5\scratchpad\kiem-tra)
+HEAD = 95038b0 fix(api): kiem tra id duong dan va ngay from/to truoc khi truy van, tra 400 thay vi 500 (BUG-09)
+$ cp .env.example .env
+$ docker compose up -d --build
+ Container kiem-tra-postgres-1 Creating 
+ Container kiem-tra-postgres-1 Created 
+ Container kiem-tra-db-init-1 Creating 
+ Container kiem-tra-db-init-1 Created 
+ Container kiem-tra-backend-1 Creating 
+ Container kiem-tra-backend-1 Created 
+ Container kiem-tra-frontend-1 Creating 
+ Container kiem-tra-frontend-1 Created 
+ Container kiem-tra-postgres-1 Starting 
+ Container kiem-tra-postgres-1 Started 
+ Container kiem-tra-postgres-1 Waiting 
+ Container kiem-tra-postgres-1 Healthy 
+ Container kiem-tra-db-init-1 Starting 
+ Container kiem-tra-db-init-1 Started 
+ Container kiem-tra-db-init-1 Waiting 
+ Container kiem-tra-db-init-1 Exited 
+ Container kiem-tra-backend-1 Starting 
+ Container kiem-tra-backend-1 Started 
+ Container kiem-tra-backend-1 Waiting 
+ Container kiem-tra-backend-1 Healthy 
+ Container kiem-tra-frontend-1 Starting 
+ Container kiem-tra-frontend-1 Started 
+(elapsed 31s)
+$ docker compose ps -a
+SERVICE    STATUS                      PORTS
+backend    Up 20 seconds (healthy)     0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+db-init    Exited (0) 21 seconds ago   
+frontend   Up 15 seconds (healthy)     0.0.0.0:8088->80/tcp, [::]:8088->80/tcp
+postgres   Up 35 seconds (healthy)     5432/tcp
+$ curl -s http://localhost:3000/api/health
+{"status":"UP","database":"CONNECTED","timestamp":"2026-11-13T07:05:06.824Z"}
+$ curl -s http://localhost:8088/api/health
+{"status":"UP","database":"CONNECTED","timestamp":"2026-11-13T07:05:06.849Z"}

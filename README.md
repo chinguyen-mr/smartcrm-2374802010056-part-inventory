@@ -4,8 +4,38 @@
 **Track:** SE – Software Engineering  
 **Học phần:** Chuyên đề Tốt nghiệp 1 – Khoa CNTT, Trường Đại học Văn Lang  
 **Case Study:** Smart CRM – Mekong Mobile  
-**Phiên bản:** `v0.2` (Bài tập 2 – Hiện thực hóa module cốt lõi)  
+**Phiên bản:** `v1.0` (Bài tập 3 – Kiểm thử, đóng gói và tài liệu kỹ thuật) · bản trước: `v0.2` (BT2)  
 **GitHub:** [smartcrm-2374802010056-part-inventory](https://github.com/chinguyen-mr/smartcrm-2374802010056-part-inventory)
+
+---
+
+## 0. Chạy hệ thống bằng 2 lệnh (Docker)
+
+Yêu cầu: Docker Desktop / Docker Engine có Compose v2. Chạy trong thư mục gốc của repo:
+
+```bash
+cp .env.example .env            # Windows PowerShell: Copy-Item .env.example .env
+docker compose up -d --build
+```
+
+- Giao diện: **http://localhost:8088** · API: **http://localhost:3000/api/health**
+- CSDL được tạo và nạp dữ liệu mẫu tự động bởi service `db-init`; kiểm tra: `docker compose ps -a` (3 service `healthy`, `db-init` `Exited (0)`).
+- Chạy bộ test: `docker compose exec backend npm test` (36 test).
+- Hướng dẫn đầy đủ (tiếng Anh, 5 mục + Verify it works): **[docs/deployment-guide.md](docs/deployment-guide.md)**.
+
+### Tài liệu BT3
+
+| Thành phần | Tệp |
+|---|---|
+| TP1 – Test Plan | [docs/test-plan.md](docs/test-plan.md) |
+| TP2 – Test Report | [docs/test-report.md](docs/test-report.md) · ảnh [docs/screenshots/](docs/screenshots/) |
+| TP3 – Bug Log | [docs/bug-log.md](docs/bug-log.md) (BUG-01 – BUG-09, có link commit) |
+| TP4 – Gói đóng gói | [docker-compose.yml](docker-compose.yml) · [src/backend/Dockerfile](src/backend/Dockerfile) · [src/frontend/Dockerfile](src/frontend/Dockerfile) |
+| TP5 – Deployment Guide + checklist bảo mật | [docs/deployment-guide.md](docs/deployment-guide.md) · [docs/checklist-bao-mat.md](docs/checklist-bao-mat.md) |
+| TP6 – API docs (track SE) | [docs/api-docs.md](docs/api-docs.md) |
+| Thay đổi so với BT2 | [docs/thay-doi-thiet-ke.md](docs/thay-doi-thiet-ke.md) (TD-11 – TD-15) |
+| Khai báo AI | [docs/ai-disclosure.md](docs/ai-disclosure.md) (mục 5 – giai đoạn 3) |
+| Log minh chứng lần chạy thật | [docs/evidence/bt3/](docs/evidence/bt3/) |
 
 ---
 
@@ -23,7 +53,8 @@ Module **L5 – Kho linh kiện thay thế** là phân hệ quản lý biến đ
 - **Frontend:** React 19 + Vite (JavaScript, Vanilla CSS thiết kế hiện đại, responsive).
 - **Backend:** Node.js (v20+) + Express.js, kiến trúc 3 lớp phân lập rõ ràng (`routes` $\rightarrow$ `services` $\rightarrow$ `repositories`).
 - **Database:** PostgreSQL 15+, toàn vẹn dữ liệu với Foreign Keys, CHECK constraints, và Unique indexes.
-- **Kiểm thử:** Node.js native test runner (`node --test`), 31 test cases (Unit Test với mock repo + Integration Test với PostgreSQL thật) chạy bằng 1 lệnh duy nhất.
+- **Kiểm thử:** Node.js native test runner (`node --test`), 36 test cases (24 Unit Test với mock repo + 12 Integration Test với PostgreSQL thật) chạy bằng 1 lệnh duy nhất.
+- **Đóng gói:** Docker Compose 4 service (`postgres`, `db-init`, `backend`, `frontend`) có healthcheck.
 
 ---
 
@@ -115,8 +146,9 @@ DB_USER=postgres
 DB_PASSWORD=mật_khẩu_postgres_của_bạn
 
 APP_PORT=3000
-JWT_SECRET=smartcrm_jwt_secret_dev_2026
+JWT_SECRET=<chuỗi ngẫu nhiên ít nhất 32 ký tự>   # bắt buộc, backend dừng nếu thiếu
 ```
+Tạo khóa ngẫu nhiên: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
 
 ### 4.3. Cài đặt Dependencies
 Cài đặt thư viện cho cả Backend và Frontend:
@@ -183,11 +215,11 @@ npm test
 cd src/backend
 npm test
 ```
-*Kết quả:* Chạy **31/31 bài test PASS 100%**, bao gồm:
+*Kết quả:* Chạy **36/36 bài test PASS 100%** (24 unit + 12 integration), bao gồm:
 1. **Luồng đúng (Positive):** Xuất kho thành công khi phiếu hợp lệ và đủ tồn; Nhập kho tăng tồn và ghi giao dịch; Khởi tạo dòng tồn tự động cho linh kiện mới.
 2. **Giá trị biên (Boundary):** Xuất số lượng đúng bằng tồn kho hiện tại (tồn về 0 hợp lệ); Tồn bằng đúng ngưỡng (`quantity == min_threshold`) không cảnh báo; Tồn nhỏ hơn ngưỡng (`quantity < min_threshold`) bật cảnh báo; Nhập số lượng tối thiểu = 1.
 3. **Dữ liệu sai & từ chối (Negative):** Từ chối xuất vượt tồn (`INSUFFICIENT_STOCK`); Từ chối số lượng âm hoặc bằng 0; Từ chối phiếu không tồn tại; Từ chối phiếu khác trung tâm; Từ chối phiếu sai trạng thái (allowlist); Từ chối truy cập ngoài trung tâm được cấp quyền (QT-14); KTV không có quyền đặt ngưỡng.
-4. **Integration Tests:** 9 test cases chạy toàn trình với CSDL PostgreSQL thật.
+4. **Integration Tests:** 12 test cases chạy toàn trình với CSDL PostgreSQL thật (gồm 3 ca hồi quy cho BUG-08, BUG-09: thiếu body, id không phải số, ngày lọc sai → 400).
 
 ---
 
@@ -293,36 +325,22 @@ Theo yêu cầu chuẩn của Buổi 8, 9, 10 và 11, hiện trạng triển kha
 
 ---
 
-## 11. Đóng gói và Điều phối dịch vụ với Docker (Buổi 11)
+## 11. Đóng gói và Điều phối dịch vụ với Docker (Buổi 11 → hoàn thiện BT3)
 
-Dự án đã chuẩn bị đầy đủ cấu hình đóng gói theo chuẩn Stack SE phục vụ triển khai container hóa:
+- **Backend Dockerfile** (`src/backend/Dockerfile`, build context = gốc repo): `node:20-alpine`, `npm ci --omit=dev` theo lockfile, chạy bằng `USER node`, chứa sẵn `sql/sql-ddl.sql`, `data/sample/` và `tests/`, `HEALTHCHECK` tại `GET /api/health`.
+- **Frontend Dockerfile:** multi-stage (Vite build → `nginx:1.27-alpine`), Nginx phục vụ file tĩnh và proxy `/api/` sang backend.
+- **Docker Compose:** 4 service khởi động theo thứ tự `postgres` (healthy) → `db-init` (tạo schema nếu chưa có + seed idempotent, thoát 0) → `backend` (healthy) → `frontend` (healthy). PostgreSQL không publish cổng ra máy host.
 
-- **Backend Dockerfile:** Multi-stage build trên nền `node:20-alpine`, chạy bằng tài khoản không đặc quyền (`USER node`), có endpoint kiểm tra sức khỏe `HEALTHCHECK` tại `GET /api/health`.
-- **Frontend Dockerfile:** Multi-stage build (Stage 1: Vite build bundle $\rightarrow$ Stage 2: `nginx:1.27-alpine` phục vụ file tĩnh và reverse proxy chuyển tiếp các request `/api/` về container Backend).
-- **Docker Compose (`docker-compose.yml`):** Điều phối 3 container đồng bộ gồm PostgreSQL 16 Alpine, Express Backend và Nginx Frontend, khởi động theo trạng thái healthy (`depends_on: { condition: service_healthy }`).
-
-### 11.1. Lệnh khởi chạy với Docker
 ```bash
-# Khởi động toàn bộ cụm dịch vụ ở chế độ chạy nền
-docker compose up -d --build
-
-# Kiểm tra trạng thái các container (phải đạt trạng thái healthy)
-docker compose ps
-
-# Xem log hoạt động theo thời gian thực
-docker compose logs -f
+cp .env.example .env
+docker compose up -d --build          # khởi động toàn bộ, tự khởi tạo CSDL
+docker compose ps -a                  # 3 service healthy, db-init Exited (0)
+docker compose exec backend npm test  # 36/36 PASS
+docker compose run --rm db-init       # chạy lại: nạp 0 dòng mới, số dòng không đổi (C8)
+docker compose down -v                # dừng và xóa dữ liệu
 ```
 
-### 11.2. Chạy Migration và Seed trong Docker
-```bash
-# Khởi tạo CSDL 7 bảng bên trong container backend
-docker compose exec backend npm run migrate
-
-# Nạp dữ liệu mẫu ban đầu
-docker compose exec backend npm run seed
-```
-
-> **Ghi chú môi trường:** Trên máy tính cá nhân của sinh viên hiện đang dùng Windows chưa cài Docker Desktop, dự án được kiểm thử và xác nhận hoạt động 100% qua quy trình **Native** (Node.js + PostgreSQL). Cấu hình Docker đã được lập trình chuẩn mực và sẵn sàng chạy trên bất kỳ máy chấm bài hoặc server nào có cài Docker.
+> Đã chạy phép thử máy trắng (clone vào thư mục trống → 2 lệnh trên) thành công trên Windows 11 + Docker 29.9 / Compose v5.6 ngày 13/11/2026 — log: [docs/evidence/bt3/01-clean-machine-test.txt](docs/evidence/bt3/01-clean-machine-test.txt).
 
 ---
 
@@ -342,7 +360,23 @@ docker compose exec backend npm run seed
 | **DOC-01** | Hồ sơ tài liệu kỹ thuật | Đồng bộ ERD 7 bảng, DDL, Draw.io, SRS, thay đổi thiết kế, Bug Log, Khai báo AI | Kiểm tra thư mục `docs/` | `docs/erd.md`, `thay-doi-thiet-ke.md`, `bug-log.md`, `ai-disclosure.md` | `PASS` |
 | **DOC-02** | Báo cáo PDF BT2 | File PDF `BT2_2374802010056_NguyenVanChi.pdf` hoàn thiện theo mẫu đề bài | Mở file tại `TaiLieu/BuoiHoc/` | `BT2_2374802010056_NguyenVanChi.pdf` (10.9 MB) | `PASS` |
 | **GIT-01** | Quản lý Git & Tag v0.2 | Nhánh sạch sẽ, lịch sử commit rõ ràng (> 20 commits), tag `v0.2` đã tạo | `git status`, `git tag -l` | Ảnh `26_git_status.png`, `27_git_tag_v02.png` | `PASS` |
-| **DOCKER** | Đóng gói Docker Compose | Đã tạo Dockerfile Backend, Dockerfile Frontend, Nginx conf, docker-compose.yml | Đọc cấu hình `docker-compose.yml` | `docker-compose.yml`, `src/backend/Dockerfile`, `src/frontend/Dockerfile` | `READY (NATIVE_PASS)` |
+| **DOCKER** | Đóng gói Docker Compose | Đã tạo Dockerfile Backend, Dockerfile Frontend, Nginx conf, docker-compose.yml | Đọc cấu hình `docker-compose.yml` | `docker-compose.yml`, `src/backend/Dockerfile`, `src/frontend/Dockerfile` | `PASS` (BT3, xem mục 13) |
+
+---
+
+## 13. Tự đối chiếu tiêu chí kỹ thuật BT3 (C1 – C9)
+
+| Mã | Tiêu chí | Kết quả | Minh chứng |
+|:---:|:---|:---|:---|
+| **C1** | Dựng lại từ thư mục trống bằng ≤ 2 lệnh theo Deployment Guide | `cp .env.example .env` + `docker compose up -d --build` → 4 service healthy / exited 0 | `docs/evidence/bt3/01-clean-machine-test.txt` |
+| **C2** | Test Report 10–12 test case, 8 cột, đủ 5 loại | 18 ca chạy thật, 8 cột, đủ 5 loại | `docs/test-report.md` |
+| **C3** | Bộ test PASS bằng một lệnh | `docker compose exec backend npm test` → 36/36 | `docs/evidence/bt3/05-npm-test-in-container.txt` |
+| **C4** | Bug Log ≥ 3 bug, ≥ 1 Critical/Major, 7 dòng, link commit | 9 bug (2 Critical, 4 Major, 3 Minor), mỗi bug 7 dòng + link commit | `docs/bug-log.md` |
+| **C5** | Deployment Guide đủ 5 mục, có "Verify it works" | Requirements · Setup steps · Environment variables · Sample data · Verify it works (+ HTTPS, Troubleshooting) | `docs/deployment-guide.md` |
+| **C6** | Checklist bảo mật 7 mục có minh chứng | 6 ĐÃ LÀM + 1 KHÔNG ÁP DỤNG, mỗi mục có lệnh/tệp | `docs/checklist-bao-mat.md` |
+| **C7** | Không có secret trong repo; `.env` chưa từng commit | `git log --all --oneline -- .env` rỗng; khóa JWT mặc định cũ đã gỡ | `docs/evidence/bt3/07-secret-scan.txt` |
+| **C8** | Chạy lại seed/migration lần hai không lỗi, không nhân đôi | `docker compose run --rm db-init` → nạp 0 dòng, số dòng 7 bảng không đổi | `docs/evidence/bt3/06-db-init-rerun-idempotent.txt` |
+| **C9** | Tài liệu kỹ thuật đúng hệ thống thật | API docs 15/15 route trong mã, ví dụ chép từ lần chạy thật | `docs/api-docs.md`, `docs/evidence/bt3/10-api-capture.json` |
 
 
 

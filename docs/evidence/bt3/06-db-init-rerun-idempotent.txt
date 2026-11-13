@@ -1,0 +1,53 @@
+$ docker compose run --rm db-init   # lan 1 sau khi he thong da chay
+=== DB-INIT: KIỂM TRA SCHEMA ===
+Schema đã có -> giữ nguyên dữ liệu, chỉ chạy seed idempotent
+1. Nạp danh mục trung tâm bảo hành...
+   -> Đã nạp 0/6 trung tâm mới.
+2. Nạp danh mục nhân viên (employee)...
+   -> Đã nạp 0/38 nhân viên mới.
+3. Nạp danh mục linh kiện thay thế...
+   -> Đã nạp 0/180 linh kiện mới.
+4. Nạp số dư tồn kho (part_stock)...
+   -> Đã nạp 0/717 dòng tồn kho mới.
+5. Nạp tham chiếu phiếu bảo hành (ticket_ref)...
+   -> Đã nạp 0/7800 phiếu bảo hành tham chiếu.
+   -> Đã nạp thêm phiếu mẫu (active & invalid) phục vụ kiểm thử xuất kho.
+6. Nạp lịch sử giao dịch kho (part_transactions)...
+   -> Đã nạp 0/4954 giao dịch kho mới.
+7. Cập nhật Identity Sequence cho các bảng...
+=== DB-INIT: SỐ DÒNG SAU KHI CHẠY ===
+   service_center     6
+   employee           38
+   part               180
+   part_stock         717
+   ticket_ref         7805
+   ticket_part        4066
+   part_transaction   4960
+✅ DB-INIT HOÀN TẤT
+
+$ docker compose run --rm db-init   # lan 2
+=== DB-INIT: KIỂM TRA SCHEMA ===
+Schema đã có -> giữ nguyên dữ liệu, chỉ chạy seed idempotent
+1. Nạp danh mục trung tâm bảo hành...
+   -> Đã nạp 0/6 trung tâm mới.
+2. Nạp danh mục nhân viên (employee)...
+   -> Đã nạp 0/38 nhân viên mới.
+3. Nạp danh mục linh kiện thay thế...
+   -> Đã nạp 0/180 linh kiện mới.
+4. Nạp số dư tồn kho (part_stock)...
+   -> Đã nạp 0/717 dòng tồn kho mới.
+5. Nạp tham chiếu phiếu bảo hành (ticket_ref)...
+   -> Đã nạp 0/7800 phiếu bảo hành tham chiếu.
+   -> Đã nạp thêm phiếu mẫu (active & invalid) phục vụ kiểm thử xuất kho.
+6. Nạp lịch sử giao dịch kho (part_transactions)...
+   -> Đã nạp 0/4954 giao dịch kho mới.
+7. Cập nhật Identity Sequence cho các bảng...
+=== DB-INIT: SỐ DÒNG SAU KHI CHẠY ===
+   service_center     6
+   employee           38
+   part               180
+   part_stock         717
+   ticket_ref         7805
+   ticket_part        4066
+   part_transaction   4960
+✅ DB-INIT HOÀN TẤT

@@ -1,0 +1,27 @@
+$ docker compose logs db-init   # lan chay dau tien khi docker compose up
+db-init-1  | ◇ injected env (0) from ../.env
+db-init-1  | === DB-INIT: KIỂM TRA SCHEMA ===
+db-init-1  | Schema chưa có -> tạo 7 bảng từ sql-ddl.sql
+db-init-1  | 1. Nạp danh mục trung tâm bảo hành...
+db-init-1  |    -> Đã nạp 6/6 trung tâm mới.
+db-init-1  | 2. Nạp danh mục nhân viên (employee)...
+db-init-1  |    -> Đã nạp 38/38 nhân viên mới.
+db-init-1  | 3. Nạp danh mục linh kiện thay thế...
+db-init-1  |    -> Đã nạp 180/180 linh kiện mới.
+db-init-1  | 4. Nạp số dư tồn kho (part_stock)...
+db-init-1  |    -> Đã nạp 717/717 dòng tồn kho mới.
+db-init-1  | 5. Nạp tham chiếu phiếu bảo hành (ticket_ref)...
+db-init-1  |    -> Đã nạp 7800/7800 phiếu bảo hành tham chiếu.
+db-init-1  |    -> Đã nạp thêm phiếu mẫu (active & invalid) phục vụ kiểm thử xuất kho.
+db-init-1  | 6. Nạp lịch sử giao dịch kho (part_transactions)...
+db-init-1  |    -> Đã nạp 4954/4954 giao dịch kho mới.
+db-init-1  | 7. Cập nhật Identity Sequence cho các bảng...
+db-init-1  | === DB-INIT: SỐ DÒNG SAU KHI CHẠY ===
+db-init-1  |    service_center     6
+db-init-1  |    employee           38
+db-init-1  |    part               180
+db-init-1  |    part_stock         717
+db-init-1  |    ticket_ref         7805
+db-init-1  |    ticket_part        4063
+db-init-1  |    part_transaction   4954
+db-init-1  | ✅ DB-INIT HOÀN TẤT

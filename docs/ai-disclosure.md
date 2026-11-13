@@ -77,3 +77,14 @@ Tôi xác nhận đã trực tiếp chỉ đạo, rà soát, kiểm thử và ch
 - **Lớp / Khóa:** K29 – Track SE
 - **Đại học:** Trường Đại học Văn Lang – Khoa Công nghệ Thông tin
 - **Ngày xác nhận:** 19/10/2026
+
+---
+
+## 5. Phụ lục — Bảng khai báo sử dụng AI giai đoạn 3 (BT3: buổi 13–16)
+
+| Công cụ AI | Đã dùng AI vào việc gì | Phần kết quả trong repo có sự hỗ trợ của AI | Sinh viên kiểm chứng bằng cách nào |
+|---|---|---|---|
+| Công cụ AI ghi ở mục 2 – "Giai đoạn Buổi 14" | Lập kế hoạch 18 ca kiểm thử, chạy kịch bản curl, kết xuất ảnh minh chứng từ output thật, phân tích BUG-05 | `docs/test-plan.md`, `docs/test-report.md`, `docs/screenshots/TC-*.png`, BUG-05 trong `docs/bug-log.md`, `TC14B/TC14C` | Như mục 2 – Giai đoạn Buổi 14 (đối chiếu mã lỗi, tự tính Content-Length, `npm test` 33/33) |
+| Claude Code (Anthropic) | Đọc yêu cầu buổi 14–16; rà gói Docker theo tiêu chí C1–C9; sửa đóng gói (`db-init`, Dockerfile, compose); bổ sung bảo mật (JWT bắt buộc ≥ 32 ký tự, HS256, CORS allow-list); phát hiện và sửa BUG-06 – BUG-09; chạy phép thử máy trắng và `npm audit`; soạn nháp Deployment Guide, API docs, checklist bảo mật | `docker-compose.yml`, `src/backend/Dockerfile`, `.dockerignore`, `.gitattributes`, `src/backend/scripts/bootstrap.js`, `auth.middleware.js`, `server.js`, `validators/common.validator.js`, test `API-IT-08..10`; `docs/deployment-guide.md`, `docs/api-docs.md`, `docs/checklist-bao-mat.md`, BUG-06 – BUG-09, TD-12 – TD-15, `docs/evidence/bt3/` | (1) Tự chạy phép thử máy trắng theo đúng Deployment Guide trong thư mục trống và chụp ảnh `docker compose ps` healthy; (2) chạy `docker compose exec backend npm test` → 36/36 PASS; (3) chạy `docker compose run --rm db-init` hai lần, số dòng không đổi; (4) bấm thử từng link commit trong Bug Log ở cửa sổ ẩn danh; (5) đối chiếu từng endpoint trong `api-docs.md` với `src/backend/src/routes/*.js` (15 route) và gọi thử bằng curl; (6) chạy lại 3 lệnh grep và `npm audit` của checklist bảo mật |
+
+**Nguyên tắc đã áp dụng:** ví dụ request/response trong API docs được chép từ lần chạy thật (`docs/evidence/bt3/10-api-capture.json`), không tự nghĩ ra; mục nào chưa làm được ghi trung thực là hạn chế (endpoint `POST /api/auth/token` thử nghiệm, xem checklist bảo mật mục 3).
