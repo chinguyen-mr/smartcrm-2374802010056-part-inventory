@@ -32,11 +32,12 @@ class ReceiptService {
       );
     }
 
-    // 2. Kiểm tra số lượng nhập phải là số nguyên dương
-    if (!Number.isInteger(quantity) || quantity <= 0) {
+    // 2. Kiểm tra số lượng nhập phải là số nguyên dương và không vượt quá giới hạn INTEGER (BUG-05)
+    const MAX_INTEGER = 2147483647;
+    if (!Number.isInteger(quantity) || quantity <= 0 || quantity > MAX_INTEGER) {
       throw new AppError(
         "DU_LIEU_KHONG_HOP_LE",
-        "Số lượng nhập kho phải là số nguyên lớn hơn 0.",
+        `Số lượng nhập kho phải là số nguyên lớn hơn 0 và không vượt quá ${MAX_INTEGER}.`,
         400,
         { field: "quantity", value: quantity }
       );
@@ -62,7 +63,16 @@ class ReceiptService {
       const existingStock = await this.stockRepo.findStockForUpdate(centerId, partId, client);
       let updatedStock;
       if (existingStock) {
-        const newQty = existingStock.quantity + quantity;
+        const currentQty = Number(existingStock.quantity);
+        if (currentQty + quantity > MAX_INTEGER) {
+          throw new AppError(
+            "DU_LIEU_KHONG_HOP_LE",
+            `Tổng số lượng tồn sau khi nhập (${currentQty + quantity}) vượt quá giới hạn tối đa cho phép (${MAX_INTEGER}).`,
+            400,
+            { field: "quantity", current_quantity: currentQty, requested_quantity: quantity }
+          );
+        }
+        const newQty = currentQty + quantity;
         updatedStock = await this.stockRepo.updateQuantity(centerId, partId, newQty, client);
       } else {
         updatedStock = await this.stockRepo.createStock(centerId, partId, quantity, 0, client);

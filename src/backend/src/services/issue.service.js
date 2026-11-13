@@ -38,11 +38,12 @@ class IssueService {
       );
     }
 
-    // 2. Kiểm tra số lượng xuất phải là số nguyên dương
-    if (!Number.isInteger(quantity) || quantity <= 0) {
+    // 2. Kiểm tra số lượng xuất phải là số nguyên dương và không vượt quá giới hạn INTEGER (BUG-05)
+    const MAX_INTEGER = 2147483647;
+    if (!Number.isInteger(quantity) || quantity <= 0 || quantity > MAX_INTEGER) {
       throw new AppError(
         "DU_LIEU_KHONG_HOP_LE",
-        "Số lượng xuất kho phải là số nguyên lớn hơn 0.",
+        `Số lượng xuất kho phải là số nguyên lớn hơn 0 và không vượt quá ${MAX_INTEGER}.`,
         400,
         { field: "quantity", value: quantity }
       );

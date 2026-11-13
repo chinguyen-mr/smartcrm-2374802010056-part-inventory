@@ -1,5 +1,8 @@
 const AppError = require("../errors/AppError");
 
+// Giới hạn số nguyên 4-byte có dấu của PostgreSQL INTEGER (-2,147,483,648 đến 2,147,483,647)
+const MAX_INTEGER = 2147483647;
+
 class StockValidator {
   /**
    * Tầng 1: Kiểm định dạng dữ liệu đầu vào cho thao tác Nhập kho (US3, UC3)
@@ -11,18 +14,18 @@ class StockValidator {
     const errors = [];
 
     const parsedCenterId = Number(center_id);
-    if (!center_id || isNaN(parsedCenterId) || !Number.isInteger(parsedCenterId) || parsedCenterId <= 0) {
+    if (!center_id || isNaN(parsedCenterId) || !Number.isInteger(parsedCenterId) || parsedCenterId <= 0 || parsedCenterId > MAX_INTEGER) {
       errors.push({ field: "center_id", reason: "Mã trung tâm phải là số nguyên dương hợp lệ." });
     }
 
     const parsedPartId = Number(part_id);
-    if (!part_id || isNaN(parsedPartId) || !Number.isInteger(parsedPartId) || parsedPartId <= 0) {
+    if (!part_id || isNaN(parsedPartId) || !Number.isInteger(parsedPartId) || parsedPartId <= 0 || parsedPartId > MAX_INTEGER) {
       errors.push({ field: "part_id", reason: "Mã linh kiện phải là số nguyên dương hợp lệ." });
     }
 
     const parsedQuantity = Number(quantity);
-    if (quantity === undefined || quantity === null || isNaN(parsedQuantity) || !Number.isInteger(parsedQuantity) || parsedQuantity <= 0) {
-      errors.push({ field: "quantity", reason: "Số lượng nhập phải là số nguyên lớn hơn 0." });
+    if (quantity === undefined || quantity === null || isNaN(parsedQuantity) || !Number.isInteger(parsedQuantity) || parsedQuantity <= 0 || parsedQuantity > MAX_INTEGER) {
+      errors.push({ field: "quantity", reason: `Số lượng nhập phải là số nguyên lớn hơn 0 và không vượt quá ${MAX_INTEGER}.` });
     }
 
     if (reference && typeof reference === "string" && reference.length > 80) {
@@ -57,12 +60,12 @@ class StockValidator {
     const errors = [];
 
     const parsedCenterId = Number(center_id);
-    if (!center_id || isNaN(parsedCenterId) || !Number.isInteger(parsedCenterId) || parsedCenterId <= 0) {
+    if (!center_id || isNaN(parsedCenterId) || !Number.isInteger(parsedCenterId) || parsedCenterId <= 0 || parsedCenterId > MAX_INTEGER) {
       errors.push({ field: "center_id", reason: "Mã trung tâm phải là số nguyên dương hợp lệ." });
     }
 
     const parsedPartId = Number(part_id);
-    if (!part_id || isNaN(parsedPartId) || !Number.isInteger(parsedPartId) || parsedPartId <= 0) {
+    if (!part_id || isNaN(parsedPartId) || !Number.isInteger(parsedPartId) || parsedPartId <= 0 || parsedPartId > MAX_INTEGER) {
       errors.push({ field: "part_id", reason: "Mã linh kiện phải là số nguyên dương hợp lệ." });
     }
 
@@ -71,8 +74,8 @@ class StockValidator {
     }
 
     const parsedQuantity = Number(quantity);
-    if (quantity === undefined || quantity === null || isNaN(parsedQuantity) || !Number.isInteger(parsedQuantity) || parsedQuantity <= 0) {
-      errors.push({ field: "quantity", reason: "Số lượng xuất phải là số nguyên lớn hơn 0." });
+    if (quantity === undefined || quantity === null || isNaN(parsedQuantity) || !Number.isInteger(parsedQuantity) || parsedQuantity <= 0 || parsedQuantity > MAX_INTEGER) {
+      errors.push({ field: "quantity", reason: `Số lượng xuất phải là số nguyên lớn hơn 0 và không vượt quá ${MAX_INTEGER}.` });
     }
 
     if (errors.length > 0) {
@@ -102,18 +105,18 @@ class StockValidator {
     const errors = [];
 
     const parsedCenterId = Number(center_id);
-    if (!center_id || isNaN(parsedCenterId) || !Number.isInteger(parsedCenterId) || parsedCenterId <= 0) {
+    if (!center_id || isNaN(parsedCenterId) || !Number.isInteger(parsedCenterId) || parsedCenterId <= 0 || parsedCenterId > MAX_INTEGER) {
       errors.push({ field: "center_id", reason: "Mã trung tâm phải là số nguyên dương hợp lệ." });
     }
 
     const parsedPartId = Number(part_id);
-    if (!part_id || isNaN(parsedPartId) || !Number.isInteger(parsedPartId) || parsedPartId <= 0) {
+    if (!part_id || isNaN(parsedPartId) || !Number.isInteger(parsedPartId) || parsedPartId <= 0 || parsedPartId > MAX_INTEGER) {
       errors.push({ field: "part_id", reason: "Mã linh kiện phải là số nguyên dương hợp lệ." });
     }
 
     const parsedThreshold = Number(min_threshold);
-    if (min_threshold === undefined || min_threshold === null || isNaN(parsedThreshold) || !Number.isInteger(parsedThreshold) || parsedThreshold < 0) {
-      errors.push({ field: "min_threshold", reason: "Ngưỡng cảnh báo phải là số nguyên không âm (>= 0)." });
+    if (min_threshold === undefined || min_threshold === null || isNaN(parsedThreshold) || !Number.isInteger(parsedThreshold) || parsedThreshold < 0 || parsedThreshold > MAX_INTEGER) {
+      errors.push({ field: "min_threshold", reason: `Ngưỡng cảnh báo phải là số nguyên không âm (>= 0) và không vượt quá ${MAX_INTEGER}.` });
     }
 
     if (errors.length > 0) {

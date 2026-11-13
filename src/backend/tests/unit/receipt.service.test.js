@@ -118,6 +118,53 @@ describe("2. Unit Test - Nghiệp vụ Nhập kho (ReceiptService) - Luồng L5"
     );
   });
 
+  it("TC14B-Negative: Từ chối nhập kho khi số lượng vượt quá giới hạn MAX_INTEGER (BUG-05)", async () => {
+    const service = new ReceiptService();
+
+    await assert.rejects(
+      async () => {
+        await service.receiveStock(
+          { centerId: 1, partId: 1, quantity: 999999999999999 },
+          { centerId: 1 }
+        );
+      },
+      (err) => {
+        assert.ok(err instanceof AppError);
+        assert.strictEqual(err.errorCode, "DU_LIEU_KHONG_HOP_LE");
+        assert.strictEqual(err.statusCode, 400);
+        assert.ok(err.message.includes("2147483647"));
+        return true;
+      }
+    );
+  });
+
+  it("TC14C-Negative: Từ chối nhập kho khi tổng tồn sau khi nhập vượt quá MAX_INTEGER (BUG-05 mở rộng)", async () => {
+    const mockStockRepo = {
+      findStockForUpdate: async () => ({ quantity: 28 }),
+    };
+    const mockPartRepo = {
+      findById: async () => ({ part_code: "MH-SS-01" }),
+    };
+
+    const service = new ReceiptService(mockStockRepo, {}, mockPartRepo, createMockDbPool());
+
+    await assert.rejects(
+      async () => {
+        await service.receiveStock(
+          { centerId: 1, partId: 1, quantity: 2147483647 },
+          { centerId: 1 }
+        );
+      },
+      (err) => {
+        assert.ok(err instanceof AppError);
+        assert.strictEqual(err.errorCode, "DU_LIEU_KHONG_HOP_LE");
+        assert.strictEqual(err.statusCode, 400);
+        assert.ok(err.message.includes("vượt quá giới hạn tối đa"));
+        return true;
+      }
+    );
+  });
+
   it("TC15-Negative: Từ chối nhập kho khi linh kiện không tồn tại trong danh mục", async () => {
     const mockPartRepo = {
       findById: async () => null,
