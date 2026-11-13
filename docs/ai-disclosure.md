@@ -45,6 +45,18 @@ Tài liệu này ghi nhận phạm vi và cách thức sử dụng công cụ AI
   - Chạy `npm run build` tại `src/frontend`: build thành công, sinh bundle sạch trong `dist/`.
   - Khởi động backend và frontend đồng thời, thao tác tra cứu, nhập kho và xuất kho thực tế trên trình duyệt.
 
+### Giai đoạn Buổi 14: Kiểm thử thực nghiệm, Rà soát tài liệu & Audit Bảo mật
+- **Hỗ trợ từ AI:**
+  - Hỗ trợ xây dựng kế hoạch kiểm thử độc lập gồm 18 ca thực nghiệm bao quát đủ 5 nhóm: Luồng đúng, Giá trị biên, Dữ liệu sai, Bảo mật & Cô lập đa trung tâm (OWASP A01/RBAC), và Tái lập/Bất biến.
+  - Thực thi kiểm thử fuzzing và kịch bản bảo mật chuyên sâu (OWASP A01 BOLA, SQL Injection, Race Condition, giá trị biên cực hạn 32-bit integer).
+  - Tự động hóa kết xuất các ảnh minh chứng tại `docs/screenshots/` (`TC-01.png` – `TC-17.png`, `TC-18-before.png`, `TC-18-after.png`): Các ảnh này do script kết xuất từ output thực tế của lệnh curl chạy trên máy chủ local; khung cửa sổ và dòng `PS D:\...>` là mô phỏng giao diện terminal, không phải ảnh chụp màn hình từ cửa sổ PowerShell do sinh viên gõ tay. Toàn bộ HTTP status, headers, body JSON tiếng Việt UTF-8 và số liệu CSDL trước/sau đều phản ánh chính xác kết quả thực thi lệnh thật.
+- **Cách con người kiểm chứng:**
+  - Đối chiếu mã lỗi `DU_LIEU_KHONG_HOP_LE` trong mã nguồn gốc `src/backend/src/errors/AppError.js` và `stock.validator.js`, quyết định hoàn tác code không cần thiết và hiệu chỉnh kỳ vọng trong Test Plan nhằm bảo toàn thiết kế chuẩn.
+  - Giải mã độc lập payload token JWT và tự tính toán số byte Content-Length UTF-8 cho từng phản hồi HTTP (đặc biệt các ký tự tiếng Việt có dấu) để xác minh tính xác thực tuyệt đối của dữ liệu kiểm thử.
+  - Rà soát nguyên nhân gốc của lỗi BUG-05 (tràn số 32-bit `INTEGER` PostgreSQL cả ở giá trị nhập đơn lẻ và tổng tồn sau cộng `currentQty + quantity > 2147483647`), bổ sung 2 unit test (`TC14B-Negative`, `TC14C-Negative`).
+  - Chạy lệnh kiểm thử tự động `npm test` đạt 33/33 ca PASS (100% không có lỗi).
+  - Trực tiếp rà soát và nghiệm thu toàn bộ tài liệu Test Plan, Test Report, Bug Log, Thiết kế thay đổi trước khi hoàn tất báo cáo.
+
 ---
 
 ## 3. Quyết định kỹ thuật của sinh viên (Human Judgment)
