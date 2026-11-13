@@ -3,6 +3,7 @@ const router = express.Router();
 const partService = require("../services/part.service");
 const stockService = require("../services/stock.service");
 const { requireAuth, requireRole } = require("../middleware/auth.middleware");
+const { parsePositiveId } = require("../validators/common.validator");
 
 /**
  * 1. GET /api/parts - Tra cứu danh mục linh kiện kèm số lượng tồn và ngưỡng tại trung tâm (US1, UC1)
@@ -29,7 +30,7 @@ router.get("/", requireAuth, async (req, res, next) => {
  */
 router.get("/:id", requireAuth, async (req, res, next) => {
   try {
-    const partId = Number(req.params.id);
+    const partId = parsePositiveId(req.params.id, "id");
     const part = await partService.getPartById(partId);
     res.json({ data: part });
   } catch (error) {
@@ -57,7 +58,7 @@ router.post("/", requireAuth, requireRole("QUAN_LY_TRUNG_TAM"), async (req, res,
  */
 router.put("/:id", requireAuth, requireRole("QUAN_LY_TRUNG_TAM"), async (req, res, next) => {
   try {
-    const partId = Number(req.params.id);
+    const partId = parsePositiveId(req.params.id, "id");
     const updated = await partService.updatePart(partId, req.body, req.user);
     res.json({
       message: "Cập nhật linh kiện thành công.",
@@ -73,7 +74,7 @@ router.put("/:id", requireAuth, requireRole("QUAN_LY_TRUNG_TAM"), async (req, re
  */
 router.delete("/:id", requireAuth, requireRole("QUAN_LY_TRUNG_TAM"), async (req, res, next) => {
   try {
-    const partId = Number(req.params.id);
+    const partId = parsePositiveId(req.params.id, "id");
     await partService.deletePart(partId, req.user);
     res.json({
       message: `Đã xóa linh kiện #${partId} thành công.`,

@@ -5,6 +5,7 @@ const receiptService = require("../services/receipt.service");
 const issueService = require("../services/issue.service");
 const stockService = require("../services/stock.service");
 const { requireAuth, requireRole } = require("../middleware/auth.middleware");
+const { parseOptionalDate } = require("../validators/common.validator");
 
 /**
  * 1. POST /api/stock/receipts - Ghi nhận nhập kho (US3, UC3)
@@ -78,8 +79,8 @@ router.get("/transactions", requireAuth, async (req, res, next) => {
     const centerId = req.query.center_id ? Number(req.query.center_id) : (req.user ? req.user.centerId : 1);
     const partId = req.query.part_id ? Number(req.query.part_id) : undefined;
     const type = req.query.type ? String(req.query.type).toUpperCase() : undefined;
-    const from = req.query.from ? String(req.query.from).trim() : undefined;
-    const to = req.query.to ? String(req.query.to).trim() : undefined;
+    const from = parseOptionalDate(req.query.from, "from");
+    const to = parseOptionalDate(req.query.to, "to");
     const page = req.query.page ? Math.max(1, parseInt(req.query.page, 10)) : 1;
     const size = req.query.size ? Math.min(100, Math.max(1, parseInt(req.query.size, 10))) : 20;
 

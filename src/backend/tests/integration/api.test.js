@@ -150,6 +150,24 @@ describe("4. Integration Test - Toàn trình API với CSDL PostgreSQL thật - 
     assert.strictEqual(body.error, "DU_LIEU_KHONG_HOP_LE");
   });
 
+  it("API-IT-09: GET /api/parts/abc - id không phải số trả 400, không phải 500 (BUG-09)", async () => {
+    const res = await fetch(`${baseUrl}/api/parts/abc`, {
+      headers: { Authorization: `Bearer ${tokenKtv}` },
+    });
+    assert.strictEqual(res.status, 400);
+    const body = await res.json();
+    assert.strictEqual(body.error, "DU_LIEU_KHONG_HOP_LE");
+  });
+
+  it("API-IT-10: GET /api/stock/transactions?from=sai-ngay - trả 400, không phải 500 (BUG-09)", async () => {
+    const res = await fetch(`${baseUrl}/api/stock/transactions?center_id=1&from=khong-phai-ngay`, {
+      headers: { Authorization: `Bearer ${tokenQltt}` },
+    });
+    assert.strictEqual(res.status, 400);
+    const body = await res.json();
+    assert.strictEqual(body.error, "DU_LIEU_KHONG_HOP_LE");
+  });
+
   it("Đóng server test tích hợp", async () => {
     if (server) {
       await new Promise((resolve) => server.close(resolve));
