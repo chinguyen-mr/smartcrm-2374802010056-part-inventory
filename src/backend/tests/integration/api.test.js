@@ -140,6 +140,16 @@ describe("4. Integration Test - Toàn trình API với CSDL PostgreSQL thật - 
     assert.strictEqual(body.items.length, 5);
   });
 
+  it("API-IT-08: POST /api/stock/receipts không có body - trả 400, không phải 500 (BUG-08)", async () => {
+    const res = await fetch(`${baseUrl}/api/stock/receipts`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${tokenQltt}` },
+    });
+    assert.strictEqual(res.status, 400);
+    const body = await res.json();
+    assert.strictEqual(body.error, "DU_LIEU_KHONG_HOP_LE");
+  });
+
   it("Đóng server test tích hợp", async () => {
     if (server) {
       await new Promise((resolve) => server.close(resolve));

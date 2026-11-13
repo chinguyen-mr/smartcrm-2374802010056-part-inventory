@@ -41,6 +41,12 @@ app.use(
   })
 );
 app.use(express.json({ limit: "100kb" }));
+// Express 5 để req.body = undefined khi request không có body JSON (thiếu body hoặc sai Content-Type).
+// Chuẩn hóa thành {} để validator trả 400 DU_LIEU_KHONG_HOP_LE thay vì TypeError -> 500 (BUG-08).
+app.use((req, res, next) => {
+  if (req.body === undefined || req.body === null) req.body = {};
+  next();
+});
 
 // Kiểm tra kết nối PostgreSQL khi khởi động
 pool
