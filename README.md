@@ -35,6 +35,7 @@ docker compose up -d --build
 | TP6 – API docs (track SE) | [docs/api-docs.md](docs/api-docs.md) |
 | Thay đổi so với BT2 | [docs/thay-doi-thiet-ke.md](docs/thay-doi-thiet-ke.md) (TD-11 – TD-15) |
 | Khai báo AI | [docs/ai-disclosure.md](docs/ai-disclosure.md) (mục 5 – giai đoạn 3) |
+| Ảnh minh chứng BT3 (mục 7 PDF) | [docs/screenshots/BT3-01 … BT3-08](docs/screenshots/) — phép thử máy trắng, `docker compose ps` healthy, test 36/36, chạy lại db-init, giao diện, bảo mật |
 | Log minh chứng lần chạy thật | [docs/evidence/bt3/](docs/evidence/bt3/) |
 
 ---

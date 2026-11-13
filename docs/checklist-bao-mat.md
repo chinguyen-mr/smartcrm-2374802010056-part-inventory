@@ -1,14 +1,14 @@
 # Checklist bảo mật — Smart CRM L5 (BT3, tag `v1.0`)
 
 **Track:** SE · **Luồng:** L5 – Kho linh kiện thay thế · **Ngày tự đánh giá:** 13/11/2026  
-**Cách điền:** mỗi mục ghi `ĐÃ LÀM` / `CHƯA LÀM` / `KHÔNG ÁP DỤNG` kèm minh chứng kiểm chứng được (tệp, lệnh đã chạy + kết quả, ảnh chụp). Log gốc của các lệnh nằm ở [`docs/evidence/bt3/`](evidence/bt3/); ảnh chụp ở [`docs/screenshots/`](screenshots/).
+**Cách điền:** mỗi mục ghi `ĐÃ LÀM` / `CHƯA LÀM` / `KHÔNG ÁP DỤNG` kèm minh chứng kiểm chứng được (tệp, lệnh đã chạy + kết quả, ảnh chụp). Log gốc của các lệnh nằm ở [`docs/evidence/bt3/`](evidence/bt3/); ảnh chụp cửa sổ PowerShell thật ở [`docs/screenshots/`](screenshots/) (`BT3-01` … `BT3-08`).
 
 ## Bảng tổng hợp
 
 | # | Mục | Trạng thái | Minh chứng một dòng |
 |---|---|---|---|
 | 1 | Không có secret trong repo | **ĐÃ LÀM** | `git log --all --oneline -- .env` → rỗng; `JWT_SECRET`, `DB_PASSWORD` chỉ đọc từ biến môi trường; khóa dev mặc định cũ đã gỡ khỏi mã ở commit [a5c1a98](https://github.com/chinguyen-mr/smartcrm-2374802010056-part-inventory/commit/a5c1a98) — `evidence/bt3/07-secret-scan.txt` |
-| 2 | Kiểm tra dữ liệu vào ở tầng ứng dụng | **ĐÃ LÀM** | `src/backend/src/validators/stock.validator.js`, `common.validator.js`; 3 lệnh grep chống injection: grep 2 và 3 rỗng, grep 1 có 3 kết quả đã giải thích là an toàn (2 câu SQL chỉ ghép placeholder, 1 chuỗi thông báo UI); test `TC-07`, `TC-18`, `API-IT-08..10` trả 400 |
+| 2 | Kiểm tra dữ liệu vào ở tầng ứng dụng | **ĐÃ LÀM** | `src/backend/src/validators/stock.validator.js`, `common.validator.js`; 3 lệnh grep chống injection: grep 2 và 3 rỗng, grep 1 có 3 kết quả đã giải thích là an toàn (chỉ ghép placeholder `$n` hoặc tên bảng cố định) — ảnh `BT3-06-grep-injection.png`; test `TC-07`, `TC-18`, `API-IT-08..10` trả 400 |
 | 3 | Kiểm soát truy cập theo quyền sở hữu | **ĐÃ LÀM** (có hạn chế ghi rõ) | Kiểm tra trung tâm (QT-14) ở tầng service + `requireRole`; `TC-08`, `TC-08b` (403 khi truy cập trung tâm khác), `TC-14` (KTV đặt ngưỡng → 403). Hạn chế: `POST /api/auth/token` là endpoint thử nghiệm cấp token cho mọi vai trò |
 | 4 | Băm / mã hóa mật khẩu và dữ liệu nhạy cảm | **KHÔNG ÁP DỤNG** | Hệ thống không lưu mật khẩu: DDL `sql/sql-ddl.sql` không có cột mật khẩu nào; xác thực bằng JWT ký HS256 với khóa trong biến môi trường |
 | 5 | Thông báo lỗi không lộ cấu trúc bên trong | **ĐÃ LÀM** | `errorHandler.js` trả `INTERNAL_ERROR` chung, chi tiết chỉ ghi log máy chủ; `/api/health` không còn trả `error.message`; `/api/db-test` không còn trả tên CSDL; ảnh `TC-18-before.png` |
@@ -30,7 +30,7 @@
   - `docker-compose.yml` dùng `${JWT_SECRET:?…}` và `${DB_PASSWORD:?…}` — thiếu biến thì compose từ chối chạy, không còn giá trị mặc định.
   - Gỡ mật khẩu mặc định `"123"` trong `src/backend/src/config/db.js`.
   - **Đổi khóa:** `JWT_SECRET` trong `.env` cục bộ của sinh viên đã được thay bằng khóa ngẫu nhiên 64 ký tự hex (khóa cũ coi như đã lộ).
-- **Ảnh cần chụp:** `docs/screenshots/BT3-07-secret-scan.png` — cửa sổ terminal chạy `git log --all --oneline -- .env` (kết quả rỗng).
+- **Ảnh chụp:** [`docs/screenshots/BT3-07-secret-scan.png`](screenshots/BT3-07-secret-scan.png) — `git log --all --oneline -- .env` rỗng, `.env` bị `.gitignore` dòng 2 chặn, khóa chỉ đọc từ `process.env`.
 
 ### 2. Dữ liệu vào được kiểm tra ở tầng ứng dụng — ĐÃ LÀM
 
@@ -41,11 +41,11 @@
 - **Ba lệnh grep chống injection** (tài liệu tự học buổi 15, mục A4), chạy trên `src/`:
   | Lệnh | Kết quả | Kết luận |
   |---|---|---|
-  | `grep -rnE '(SELECT\|INSERT\|UPDATE\|DELETE).*(\+ *[a-zA-Z_]\|\$\{)' src/` | 3 dòng: `part.repository.js:14` và `transaction.repository.js:48` (chèn `${whereClause}`), `StockIssueScreen.jsx:77` (chuỗi thông báo UI, không phải SQL) | **An toàn**: `whereClause` chỉ ghép tên cột cố định và placeholder `$1, $2…`; mọi giá trị người dùng đi qua mảng `params` của `pg` |
+  | `grep -rnE '(SELECT\|INSERT\|UPDATE\|DELETE).*(\+ *[a-zA-Z_]\|\$\{)' src/` | 3 dòng: `part.repository.js:14`, `transaction.repository.js:48` (chèn `${whereClause}`) và `scripts/bootstrap.js:28` (chèn `${table}`) | **An toàn**: `whereClause` chỉ ghép tên cột cố định và placeholder `$1, $2…`, mọi giá trị người dùng đi qua mảng `params` của `pg`; `table` lấy từ hằng `TABLES` (7 tên bảng viết sẵn trong mã), không nhận từ người dùng |
   | `grep -rnE "innerHTML\|dangerouslySetInnerHTML\|v-html" src/` | rỗng | React tự thoát ký tự |
   | `grep -rnE 'exec\(\|execSync\|spawn\(\|os\.system\|shell=True' src/` | rỗng | Không gọi lệnh hệ thống |
 - **Test chứng minh:** `TC-07` (`quantity:-5` → 400), `TC-18` (`quantity` vượt INT → 400), `API-IT-08` (không có body → 400), `API-IT-09` (`/api/parts/abc` → 400), `API-IT-10` (`from` sai → 400).
-- **Ảnh cần chụp:** `docs/screenshots/BT3-02-grep-injection.png` — terminal chạy 3 lệnh grep.
+- **Ảnh chụp:** [`docs/screenshots/BT3-06-grep-injection.png`](screenshots/BT3-06-grep-injection.png) — 3 lệnh chạy bằng `git grep -nE` (tương đương `grep -rnE`, phân biệt hoa thường).
 
 ### 3. Kiểm soát truy cập — ĐÃ LÀM (có hạn chế ghi rõ)
 
@@ -86,7 +86,7 @@
   - Đã chạy `npm audit fix` (lên `body-parser 2.4.0`, `qs 6.17.1`), 36/36 test PASS, commit [3afeb97](https://github.com/chinguyen-mr/smartcrm-2374802010056-part-inventory/commit/3afeb97) → `found 0 vulnerabilities`.
   - Frontend: `found 0 vulnerabilities`.
 - Hạn chế: `package.json` vẫn dùng khoảng `^x.y.z`; phiên bản thực tế được khóa bởi lockfile.
-- **Ảnh cần chụp:** `docs/screenshots/BT3-08-npm-audit.png`.
+- **Ảnh chụp:** [`docs/screenshots/BT3-08-npm-audit.png`](screenshots/BT3-08-npm-audit.png) — backend và frontend đều `found 0 vulnerabilities`.
 
 ---
 
