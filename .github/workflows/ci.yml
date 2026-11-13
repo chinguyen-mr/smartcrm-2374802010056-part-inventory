@@ -34,7 +34,7 @@ jobs:
           DB_NAME=smart_crm
           DB_USER=postgres
           DB_PASSWORD=postgrespassword
-          JWT_SECRET=supersecretjwtkeyforci123
+          JWT_SECRET=ci-only-throwaway-jwt-secret-0123456789abcdef
           PORT=3000
           EOF
           cp .env src/backend/.env

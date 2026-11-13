@@ -2,12 +2,23 @@ const fs = require("fs");
 const path = require("path");
 const { pool } = require("../src/config/db");
 
+// Đường dẫn DDL: trong container đặt qua biến SQL_DDL_PATH; chạy native dùng đường dẫn tương đối tới repo
+const DDL_PATH = process.env.SQL_DDL_PATH || path.join(__dirname, "../../../sql/sql-ddl.sql");
+
+function readDdl() {
+  return fs.readFileSync(DDL_PATH, "utf-8");
+}
+
+/**
+ * Migration "reset": XÓA toàn bộ bảng L5 rồi dựng lại từ DDL.
+ * Chỉ dùng khi chủ động muốn làm sạch CSDL (npm run migrate).
+ * Khởi động bằng Docker dùng scripts/bootstrap.js (không xóa dữ liệu).
+ */
 async function migrate() {
   const client = await pool.connect();
   try {
     console.log("=== BẮT ĐẦU CHẠY MIGRATION CSDL ===");
-    const ddlPath = path.join(__dirname, "../../../sql/sql-ddl.sql");
-    const ddlContent = fs.readFileSync(ddlPath, "utf-8");
+    const ddlContent = readDdl();
 
     await client.query("BEGIN");
 
@@ -39,4 +50,8 @@ async function migrate() {
   }
 }
 
-migrate();
+if (require.main === module) {
+  migrate();
+}
+
+module.exports = { migrate, readDdl, DDL_PATH };

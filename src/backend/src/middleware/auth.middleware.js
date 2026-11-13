@@ -1,13 +1,21 @@
 const jwt = require("jsonwebtoken");
 const AppError = require("../errors/AppError");
 
-const JWT_SECRET = process.env.JWT_SECRET || "smartcrm_jwt_secret_dev_2026";
+// Khóa ký JWT BẮT BUỘC lấy từ biến môi trường, tối thiểu 32 ký tự.
+// Không có giá trị mặc định trong mã nguồn: thiếu khóa thì dừng ngay khi khởi động.
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET || JWT_SECRET.length < 32) {
+  throw new Error("JWT_SECRET phải được đặt trong biến môi trường và có ít nhất 32 ký tự.");
+}
+const JWT_ALGORITHM = "HS256";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1h";
 
 /**
- * Sinh token phục vụ kiểm thử prototype (không dùng cho production)
+ * Sinh token phục vụ kiểm thử prototype (không dùng cho production).
+ * Payload chỉ chứa id, vai trò, trung tâm — không chứa dữ liệu cá nhân.
  */
-function generateToken(payload, expiresIn = "24h") {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn });
+function generateToken(payload, expiresIn = JWT_EXPIRES_IN) {
+  return jwt.sign(payload, JWT_SECRET, { algorithm: JWT_ALGORITHM, expiresIn });
 }
 
 /**
@@ -27,7 +35,8 @@ function requireAuth(req, res, next) {
 
   const token = authHeader.split(" ")[1];
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    // Chỉ định rõ thuật toán: không để thư viện chọn theo header của token (chặn "alg: none")
+    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: [JWT_ALGORITHM] });
     req.user = decoded; // { userId, username, role: 'KTV' | 'QUAN_LY_TRUNG_TAM', centerId }
     next();
   } catch (err) {

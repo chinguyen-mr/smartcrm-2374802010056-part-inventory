@@ -42,13 +42,15 @@ function readCSV(filePath) {
   return { headers, rows };
 }
 
-async function seed() {
-  const client = await pool.connect();
-  try {
-    console.log("=== BẮT ĐẦU CHẠY SEED DỮ LIỆU L5 (IDEMPOTENT) ===");
-    const sampleDir = path.join(__dirname, "../../../data/sample");
+// Thư mục dữ liệu mẫu: trong container đặt qua SAMPLE_DATA_DIR; chạy native dùng đường dẫn tương đối tới repo
+const SAMPLE_DIR = process.env.SAMPLE_DATA_DIR || path.join(__dirname, "../../../data/sample");
 
-    await client.query("BEGIN");
+/**
+ * Nạp toàn bộ dữ liệu mẫu bằng một client đã mở transaction.
+ * Mọi câu INSERT đều có ON CONFLICT / kiểm tra tồn tại => chạy lại không nhân đôi dữ liệu.
+ */
+async function seedData(client) {
+    const sampleDir = SAMPLE_DIR;
 
     // 1. Seed danh mục trung tâm bảo hành (service_center)
     console.log("1. Nạp danh mục trung tâm bảo hành...");
@@ -243,7 +245,14 @@ async function seed() {
       SELECT setval(pg_get_serial_sequence('ticket_part', 'ticket_part_id'), COALESCE(MAX(ticket_part_id), 1)) FROM ticket_part;
       SELECT setval(pg_get_serial_sequence('part_transaction', 'transaction_id'), COALESCE(MAX(transaction_id), 1)) FROM part_transaction;
     `);
+}
 
+async function seed() {
+  const client = await pool.connect();
+  try {
+    console.log("=== BẮT ĐẦU CHẠY SEED DỮ LIỆU L5 (IDEMPOTENT) ===");
+    await client.query("BEGIN");
+    await seedData(client);
     await client.query("COMMIT");
     console.log("✅ SEED DỮ LIỆU HOÀN TẤT THÀNH CÔNG VÀ AN TOÀN!");
   } catch (error) {
@@ -256,4 +265,8 @@ async function seed() {
   }
 }
 
-seed();
+if (require.main === module) {
+  seed();
+}
+
+module.exports = { seed, seedData, SAMPLE_DIR };

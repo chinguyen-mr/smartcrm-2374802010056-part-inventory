@@ -1,17 +1,31 @@
-# Git & IDE
+# Build context của backend là thư mục gốc repo -> loại mọi thứ image không cần
+
+# Git & IDE & công cụ
 .git
 .gitignore
+.github
+.gitnexus
 .vscode
 .idea
 .claude
+.playwright-mcp
+.postman
+postman
 AGENTS.md
 CLAUDE.md
 
-# Local environment & secrets
+# Secret — tuyệt đối không đưa vào image
 .env
+.env.*
+!.env.example
 .ua
+
+# Tài liệu, minh chứng, nháp (không cần trong image)
 TaiLieu/
 evidence/
+docs/
+scratch/
+tests/
 
 # Dependencies & build outputs
 node_modules

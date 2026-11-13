@@ -17,9 +17,30 @@ const ticketRoutes = require("./src/routes/ticket.routes");
 const app = express();
 const PORT = process.env.APP_PORT || 3000;
 
-// Middleware cơ bản
-app.use(cors());
-app.use(express.json());
+// Chỉ tin header X-Forwarded-* khi chạy sau reverse proxy có TLS (TRUST_PROXY=1)
+if (process.env.TRUST_PROXY === "1") {
+  app.set("trust proxy", 1);
+}
+
+// CORS: chỉ mở cho các nguồn liệt kê trong biến môi trường, không dùng origin "*"
+const CORS_ORIGINS = (process.env.CORS_ORIGINS || "http://localhost:5173,http://localhost:8088")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      // origin rỗng: yêu cầu không đến từ trình duyệt (curl, healthcheck) -> cho qua
+      if (!origin || CORS_ORIGINS.includes(origin)) return cb(null, true);
+      return cb(null, false);
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    maxAge: 600,
+  })
+);
+app.use(express.json({ limit: "100kb" }));
 
 // Kiểm tra kết nối PostgreSQL khi khởi động
 pool
@@ -50,10 +71,11 @@ app.get("/api/health", async (req, res) => {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
+    // Chi tiết lỗi chỉ ghi log phía máy chủ, không trả cho người gọi
+    console.error("[HEALTHCHECK] Database unreachable:", error.code || "UNKNOWN");
     res.status(503).json({
       status: "DOWN",
       database: "DISCONNECTED",
-      error: error.message,
     });
   }
 });
@@ -64,7 +86,6 @@ app.get("/api/db-test", async (req, res, next) => {
     const result = await pool.query("SELECT NOW() AS current_time");
     res.json({
       message: "Database connected successfully!",
-      database: process.env.DB_NAME,
       time: result.rows[0].current_time,
     });
   } catch (error) {

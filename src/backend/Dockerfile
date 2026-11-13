@@ -1,38 +1,40 @@
 # ==============================================================================
 # SMART CRM — DOCKERFILE CHO BACKEND (NODE.JS / EXPRESS)
-# Kiến trúc: Node.js 20 Alpine, Non-root user, Healthcheck
+# Build context = THƯ MỤC GỐC REPO (xem docker-compose.yml) để image chứa được
+# sql/sql-ddl.sql và data/sample/*.csv phục vụ migrate + seed bên trong container.
 # ==============================================================================
 
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Thiết lập biến môi trường chạy production
-ENV NODE_ENV=production
+ENV NODE_ENV=production \
+    SQL_DDL_PATH=/app/sql/sql-ddl.sql \
+    SAMPLE_DATA_DIR=/app/data/sample
 
-# Cài đặt wget cho healthcheck
+# wget phục vụ healthcheck
 RUN apk add --no-cache wget
 
-# Sao chép file mô tả phụ thuộc trước để tối ưu hóa Docker layer cache
-COPY package*.json ./
-
-# Cài đặt phụ thuộc production từ lockfile
+# Cài phụ thuộc production từ lockfile (phiên bản được ghim trong package-lock.json)
+COPY src/backend/package.json src/backend/package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
-# Sao chép mã nguồn backend
-COPY server.js ./
-COPY src/ ./src/
-COPY scripts/ ./scripts/
+# Mã nguồn backend, script khởi tạo CSDL và bộ test (để chạy được `npm test` trong container)
+COPY src/backend/server.js ./
+COPY src/backend/src/ ./src/
+COPY src/backend/scripts/ ./scripts/
+COPY src/backend/tests/ ./tests/
 
-# Chạy với người dùng không đặc quyền (non-root) để đảm bảo an toàn bảo mật
+# DDL và dữ liệu mẫu (dữ liệu giả lập của case study, không chứa dữ liệu khách hàng thật)
+COPY sql/sql-ddl.sql ./sql/sql-ddl.sql
+COPY data/sample/ ./data/sample/
+
+# Chạy bằng user không đặc quyền
 USER node
 
-# Mở cổng dịch vụ backend
 EXPOSE 3000
 
-# Kiểm tra trạng thái hoạt động của dịch vụ backend
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
+HEALTHCHECK --interval=10s --timeout=5s --start-period=15s --retries=5 \
+  CMD wget --quiet --tries=1 --spider http://localhost:3000/api/health || exit 1
 
-# Lệnh khởi chạy chính
 CMD ["node", "server.js"]

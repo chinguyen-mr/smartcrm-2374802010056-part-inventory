@@ -34,3 +34,6 @@ Thumbs.db
 
 # Reports (generated)
 docs/report/
+
+# Scratch / local experiment scripts
+scratch/

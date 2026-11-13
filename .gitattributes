@@ -1,0 +1,10 @@
+# Giữ LF cho các tệp được đọc bên trong container Linux / bởi Docker Compose,
+# tránh lỗi CRLF khi clone trên Windows (core.autocrlf=true).
+*.sh              text eol=lf
+.env.example      text eol=lf
+*.yml             text eol=lf
+*.yaml            text eol=lf
+Dockerfile        text eol=lf
+*.conf            text eol=lf
+*.sql             text eol=lf
+*.csv             text eol=lf
