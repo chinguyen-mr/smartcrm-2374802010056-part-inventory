@@ -12,7 +12,7 @@
 | 3 | Kiểm soát truy cập theo quyền sở hữu | **ĐÃ LÀM** (có hạn chế ghi rõ) | Kiểm tra trung tâm (QT-14) ở tầng service + `requireRole`; `TC-08`, `TC-08b` (403 khi truy cập trung tâm khác), `TC-14` (KTV đặt ngưỡng → 403). Hạn chế: `POST /api/auth/token` là endpoint thử nghiệm cấp token cho mọi vai trò |
 | 4 | Băm / mã hóa mật khẩu và dữ liệu nhạy cảm | **KHÔNG ÁP DỤNG** | Hệ thống không lưu mật khẩu: DDL `sql/sql-ddl.sql` không có cột mật khẩu nào; xác thực bằng JWT ký HS256 với khóa trong biến môi trường |
 | 5 | Thông báo lỗi không lộ cấu trúc bên trong | **ĐÃ LÀM** | `errorHandler.js` trả `INTERNAL_ERROR` chung, chi tiết chỉ ghi log máy chủ; `/api/health` không còn trả `error.message`; `/api/db-test` không còn trả tên CSDL; ảnh `TC-18-before.png` |
-| 6 | Log không ghi mật khẩu, token, dữ liệu cá nhân thừa | **ĐÃ LÀM** | Không có middleware log request; `errorHandler` chỉ log `path, method, message, stack`, không log body/header; grep `console.*(req.body|token|password|authorization)` → rỗng |
+| 6 | Log không ghi mật khẩu, token, dữ liệu cá nhân thừa | **ĐÃ LÀM** | Không có middleware log request; `errorHandler` chỉ log `path, method, message, stack`, không log body/header; grep `console.*(req.body\|token\|password\|authorization)` → rỗng |
 | 7 | Ghim phiên bản phụ thuộc + kiểm lỗ hổng | **ĐÃ LÀM** | `package-lock.json` của backend và frontend đã commit, Docker dùng `npm ci`; `npm audit`: trước 1 high + 1 moderate → sửa ở commit [3afeb97](https://github.com/chinguyen-mr/smartcrm-2374802010056-part-inventory/commit/3afeb97) → `found 0 vulnerabilities` — `evidence/bt3/08-npm-audit.txt` |
 
 ---
